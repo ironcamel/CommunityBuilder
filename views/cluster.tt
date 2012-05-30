@@ -1,0 +1,500 @@
+
+<form class="form-horizontal well" accept-charset="utf-8">
+
+  <fieldset>
+    <legend><a href="#">Cluster Information</a></legend>
+    <div class="form_cont">
+
+<!--
+    <div class="control-group">
+      <label class="control-label" for="country">Country</label>
+      <div class="controls">
+        <select name="country" id="country">
+          [% FOR c IN countries %]
+          <option value="[% c %]">[% c %]</option>
+          [% END %]
+        </select>
+      </div>
+    </div>
+-->
+
+    <div class="control-group">
+      <label class="control-label" for="region">Region</label>
+      <div class="controls">
+        <select name="region" id="region">
+          [% FOREACH r IN regions %]
+          <option [% r == cluster.region ? 'selected' : '' %]
+              value="[% r %]">[% r %]</option>
+          [% END %]
+        </select>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="cluster">Cluster</label>
+      <div class="controls">
+        <select name="cluster" id="cluster">
+          [% FOREACH c IN clusters %]
+          <option [% c == cluster.name ? 'selected' : '' %]
+              value="[% c %]">[% c %]</option>
+          [% END %]
+        </select>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="geo_size">Geographic Size in sq. mi.</label>
+      <div class="controls">
+        <input id="geo_size" class="input-mini" type="text" name="geo_size" value="[% cluster.geo_size %]" />
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <label class="control-label" for="population">Population</label>
+      <div class="controls">
+        <input id="population" class="input-mini" type="text" name="population" value="[% cluster.population %]" />
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <label class="control-label" for="num_lsa">Number of LSA's</label>
+      <div class="controls">
+        <input id="num_lsa" class="input-mini" type="text" name="num_lsa" value="[% cluster.num_lsa %]" />
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <label class="control-label" for="num_comm">Number of Communities with Baha'is</label>
+      <div class="controls">
+        <input id="num_comm" class="input-mini" type="text" name="num_comm" value="[% cluster.num_comm %]" />
+      </div>
+    </div>
+
+
+    <div class="row">
+      <button id="save-cluster" class="span1 offset1 btn btn-primary" type="button">Save</button>
+      <div id="save-info" class="alert alert-info span4 offset1" style="display:none">
+        Saving cluster data ...
+      </div>
+      <!--
+      <div id="save-success" class="alert alert-success span4 offset4" style="display:none">
+        <a class="close" data-dismiss="alert" href="#">X</a>
+        <strong>Success: </strong><span>saved cluster data</span>
+      </div>
+      -->
+    </div>
+    
+    </div>
+  </fieldset>
+
+</form>
+
+
+<form class="modal form-horizontal well" id="core_team_modal" style="display:none">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">&times;</button>
+    <h3>New Member</h3>
+  </div>
+  <div class="modal-body">
+
+    <div class="control-group">
+      <label class="control-label" for="core_first_name">First Name</label>
+      <div class="controls">
+        <input id="core_first_name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="core_last_name">Last Name</label>
+      <div class="controls">
+        <input id="core_last_name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="core_phone">Phone</label>
+      <div class="controls">
+        <input id="core_phone" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="core_email">Email</label>
+      <div class="controls">
+        <input id="core_email" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="core_role">Role</label>
+      <div class="controls">
+        <input id="core_role" type="text" />
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+    <button id="add_core_member" class="btn btn-primary" type="button">Add</button>
+  </div>
+
+</form>
+
+<form class="form-horizontal well" accept-charset="utf-8">
+  <fieldset>  
+    <legend><a href="#">Core Team Members</a></legend>
+    <div class="form_cont">
+    <table id="core_team_table" class="table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Active</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        [% FOREACH m IN core_team_members %]
+        <tr>
+          <td>[% m.first_name %]</td>
+          <td>[% m.last_name %]</td>
+          <td>[% m.phone %]</td>
+          <td>[% m.email %]</td>
+          <td>[% m.role %]</td>
+          <td>[% m.active ? 'yes' : 'no' %]</td>
+          <td>
+            <button class="btn edit_core" type="button" disabled="disabled"
+                data-id="[% m.id %]"><i class="icon-edit"></i></button>
+            <button class="btn delete_core" type="button"
+                data-id="[% m.id %]"><i class="icon-remove"></i></button>
+          </td>
+
+        </tr>
+        [% END %]
+      </tbody>
+    </table>
+    <button id="show_core_modal" class="btn btn-primary" data-toggle="modal"
+        data-target="#core_team_modal">
+      Add Member
+    </button>
+    </div>
+  </fieldset>  
+</form>
+
+<script id="core_member_tmpl" type="text/x-mustache-template">
+  <tr>
+    <td>{{first_name}}</td>
+    <td>{{last_name}}</td>
+    <td>{{phone}}</td>
+    <td>{{email}}</td>
+    <td>{{role}}</td>
+    <td>yes</td>
+    <td>
+      <button class="btn edit_core" type="button" disabled="disabled"
+          data-id="{{id}}"><i class="icon-edit"></i></button>
+      <button class="btn delete_core" type="button"
+          data-id="{{id}}"><i class="icon-remove"></i></button>
+    </td>
+  </tr>
+</script>
+
+<form class="modal form-horizontal well" id="neighborhood_modal" style="display:none">
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">&times;</button>
+    <h3>New Neighborhood</h3>
+  </div>
+  <div class="modal-body">
+
+    <div class="control-group">
+      <label class="control-label" for="nhood_name">Community Name</label>
+      <div class="controls">
+        <input id="nhood_name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="nhood_coordinator">
+        Neighborhood Coordinator
+      </label>
+      <div class="controls">
+        <input id="nhood_coordinator" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="nhood_address">Address</label>
+      <div class="controls">
+        <input id="nhood_address" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="nhood_city">City</label>
+      <div class="controls">
+        <input id="nhood_city" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="nhood_state">State</label>
+      <div class="controls">
+        <select name="state" id="state" class="input-mini">
+          [% FOR s IN states %]
+          <option value="[% s %]">[% s %]</option>
+          [% END %]
+        </select>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="nhood_zip_code">Zip Code</label>
+      <div class="controls">
+        <input id="nhood_zip_code" type="text" class="input-mini"/>
+      </div>
+    </div>
+    
+    <fieldset>
+      <legend>Community Office</legend>
+      
+      <div class="control-group">
+        <label class="control-label" for="nhood_contact_name">
+          Contact Name
+        </label>
+        <div class="controls">
+          <input id="nhood_contact_name" type="text" />
+        </div>
+      </div>
+    
+      <div class="control-group">
+        <label class="control-label" for="nhood_contact_title">Title</label>
+        <div class="controls">
+          <input id="nhood_contact_title" type="text" />
+        </div>
+      </div>
+    
+      <div class="control-group">
+        <label class="control-label" for="nhood_contact_phone">Phone</label>
+        <div class="controls">
+          <input id="nhood_contact_phone" type="text" />
+        </div>
+      </div>
+    
+      <div class="control-group">
+        <label class="control-label" for="nhood_contact_email">Email</label>
+        <div class="controls">
+          <input id="nhood_contact_email" type="text" />
+        </div>
+      </div>
+    
+    </fieldset>
+
+    <fieldset>
+      <legend>Notes</legend>
+      <textarea id="nhood_notes" style="width:95%"></textarea>
+    </fieldset>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+    <button id="add_neighborhood" class="btn btn-primary" type="button">Add</button>
+  </div>
+
+</form>
+
+<form class="form-horizontal well" accept-charset="utf-8">
+  <fieldset>  
+    <legend><a href="#">Neighborhoods</a></legend>
+    <div class="form_cont">
+
+    <div id="nhoods">
+      [% FOREACH n IN neighborhoods %]
+      <table class="table" style="margin-bottom=10px">
+        <thead>
+          <tr colspan="2">
+            <th class="span2"><a class="nhood_link" href="#">[% n.name %]</a></th>
+            <th>
+              <button class="btn delete_nhood" type="button"
+                  style="display:none" data-id="[% n.id %]">
+                <i class="icon-remove"></i>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody style="display:none">
+          <tr> <td>Name</td> <td class="">[% n.name %]</td> </tr>
+          <tr> <td>Coordinator</td> <td>[% n.coordinator %]</td> </tr>
+          <tr> <td>Address</td> <td>[% n.address %]</td> </tr>
+          <tr> <td>City</td> <td>[% n.city %]</td> </tr>
+          <tr> <td>State</td> <td>[% n.state %]</td> </tr>
+          <tr> <td>Zip Code</td> <td>[% n.zip_code %]</td> </tr>
+          <tr> <td>Office Contact</td> <td>[% n.office_name %]</td> </tr>
+          <tr> <td>Office Title</td> <td>[% n.office_title %]</td> </tr>
+          <tr> <td>Office Phone</td> <td>[% n.office_phone %]</td> </tr>
+          <tr> <td>Office Email</td> <td>[% n.office_email %]</td> </tr>
+          <tr> <td>Office Notes</td> <td>[% n.notes %]</td> </tr>
+        </tbody>
+      </table>
+      [% END %]
+    </div>
+
+    <button id="show_neighborhood_modal" class="btn btn-primary"
+        data-toggle="modal" data-target="#neighborhood_modal">
+      Add Neighborhood
+    </button>
+    </div>
+  </fieldset>  
+</form>
+
+<script id="nhood_tmpl" type="text/x-mustache-template">
+  <table class="table " style="margin-bottom=10px">
+  <thead>
+    <tr colspan="2">
+      <th>{{name}}</th>
+    </tr>
+  </thead>
+    <tbody>
+      <tr> <td class="span2">Name</td> <td class="">{{name}}</td> </tr>
+      <tr> <td>Coordinator</td> <td>{{coordinator}}</td> </tr>
+      <tr> <td>Address</td> <td>{{address}}</td> </tr>
+      <tr> <td>City</td> <td>{{city}}</td> </tr>
+      <tr> <td>State</td> <td>{{state}}</td> </tr>
+      <tr> <td>Zip Code</td> <td>{{zip_code}}</td> </tr>
+    </tbody>
+  </table>
+</script>
+
+<!--
+<button id="zzz" type="button">template test</button>
+<div id='aaa'>
+</div>
+-->
+
+
+<script>
+
+function delete_core_member() {
+  var id = $(this).data('id');
+  var row = $(this).parents('tr');
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/delete_core_member",
+    type: "POST",
+    data: { id : id }
+  }).done(function() {
+    row.remove();
+  });
+  return false;
+};
+
+$('.delete_core').click(delete_core_member);
+
+$('.edit_core').click(function() {
+  return false;
+});
+
+$('#save-cluster').click(function() {
+  $('#save-info').show();
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/update_cluster",
+    type: "POST",
+    data: {
+      region     : $('#region').val(),
+      name       : $('#cluster').val(),
+      geo_size   : $('#geo_size').val(),
+      population : $('#population').val(),
+      num_lsa    : $('#num_lsa').val(),
+      num_comm   : $('#num_comm').val()
+    }
+  }).done(function() {
+    $('#save-info').hide('slow');
+    //$('#save-success').show('fast');
+  });
+});
+
+$('#show_core_modal').click(function() {
+  $('#add_core_member').attr('disabled', false);
+});
+
+$('#add_core_member').click(function() {
+  $('#add_core_member').attr('disabled', true);
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/add_core_member",
+    type: "POST",
+    data: {
+      first_name : $('#core_first_name').val(),
+      last_name  : $('#core_last_name').val(),
+      phone      : $('#core_phone').val(),
+      email      : $('#core_email').val(),
+      role       : $('#core_role').val()
+    }
+  }).done(function(data2) {
+    $('#core_team_modal').modal('hide');
+    var tmpl = $('#core_member_tmpl').html();
+    $('#core_team_table tbody').append(Mustache.to_html(tmpl, data2));
+    $('.delete_core').click(delete_core_member);
+  });
+});
+
+$('#show_neighborhood_modal').click(function() {
+  $('#add_neighborhood').attr('disabled', false);
+});
+
+$('#add_neighborhood').click(function() {
+  $('#add_neighborhood').attr('disabled', true);
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/add_neighborhood",
+    type: "POST",
+    data: {
+      name         : $('#nhood_name').val(),
+      coordinator  : $('#nhood_coordinator').val(),
+      address      : $('#nhood_address').val(),
+      city         : $('#nhood_city').val(),
+      state        : $('#nhood_state').val(),
+      zip_code     : $('#nhood_zip_code').val(),
+      office_name  : $('#nhood_contact_name').val(),
+      office_title : $('#nhood_contact_title').val(),
+      office_phone : $('#nhood_contact_phone').val(),
+      office_email : $('#nhood_contact_email').val(),
+      notes        : $('#nhood_notes').val()
+    }
+  }).done(function(data) {
+    $('#neighborhood_modal').modal('hide');
+    var tmpl = $('#nhood_tmpl').html();
+    $('#nhoods').append(Mustache.to_html(tmpl, data));
+  });
+});
+
+$('fieldset > legend > a').click(function() {
+  $(this).parents('fieldset').find('.form_cont').toggle();
+  return false;
+});
+
+$('.nhood_link').click(function() {
+  $(this).parents('table').find('tbody').toggle();
+  $(this).parents('table').find('.delete_nhood').toggle();
+  return false;
+});
+
+function delete_nhood() {
+  var id = $(this).data('id');
+  var table = $(this).parents('table');
+  var sure = confirm('Are you sure you want to delete this neighborhood?');
+  if (!sure)
+    return false;
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/delete_nhood",
+    type: "POST",
+    data: { id : id }
+  }).done(function() {
+    table.remove();
+  });
+  return false;
+};
+
+$('.delete_nhood').click(delete_nhood);
+
+</script>

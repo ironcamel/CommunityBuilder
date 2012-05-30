@@ -1,0 +1,94 @@
+
+[% IF err_msg %]
+<div id="server-err" class="alert alert-error">
+  <strong>Oops: </strong><span>[% err_msg | html %]</span>
+</div>
+[% END %]
+
+<div id="validation-err" class="alert alert-error" style="display:none">
+  <strong>Oops: </strong><span></span>
+</div>
+
+<form id="login-form" name="login" class="well form-inline"
+    action="[% request.uri_base %]/login" method="post" accept-charset="utf-8">
+
+  <fieldset>
+    <legend>Sign in</legend>
+    <input type="hidden" name="requested_path" value="[% requested_path %]"/>
+    <input id="username" type="text" placeholder="Username" name="username"/>
+    <input id="password" type="password" placeholder="Password"
+        name="password"/>
+    <button class="btn" type="submit">Sign in</button>
+  </fieldset>
+
+</form>
+
+
+<form id="create-form" name="create" class="well"
+    action="[% request.uri_base %]/login"
+    method="post" accept-charset="utf-8">
+
+  <input type="hidden" name="create-user" value="1" />
+
+  <fieldset>
+    <legend>Create Account</legend>
+
+    <label for="username">Username</label>
+    <input id="new_username" type="text" name="new_username" />
+
+    <label for="email">Email</label>
+    <input id="email" type="text" name="email" />
+
+    <label for="password">Password</label>
+    <input id="new_password" type="password" name="new_password" />
+
+    <label for="password2">Verify password</label>
+    <input id="password2" type="password" name="password2" />
+
+    <div class="alert-message error" style="display:none">
+      <p><strong>Oops: </strong></p>
+    </div>
+    <div class="alert-message success" style="display:none">
+      <p><strong>Success: </strong> you may now login</p>
+    </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn">Create account</button>
+  </div>
+
+  </fieldset>
+
+</form>
+
+<script>
+
+$('#create-form').submit(function() {
+  if (! $('#new_username').val()) {
+    $('#validation-err').show();
+    $('#validation-err span').html('Username is required.');
+    return false;
+  }
+  if (! $('#email').val()) {
+    $('#validation-err').show();
+    $('#validation-err span').html('Email is required.');
+    return false;
+  }
+  if (! $('#email').val().match(/.+@.+\..+/) ) {
+    $('#validation-err').show();
+    $('#validation-err span').html('Email is invalid.');
+    return false;
+  }
+  if (! $('#new_password').val()) {
+    $('#validation-err').show();
+    $('#validation-err span').html('Password is required.');
+    return false;
+  }
+  if ($('#password2').val() != $('#new_password').val()) {
+    $('#validation-err').show();
+    $('#validation-err span').html('Passwords do not match.');
+    return false;
+  }
+  return true;
+});
+  
+</script>
