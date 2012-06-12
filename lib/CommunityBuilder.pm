@@ -3,7 +3,9 @@ use Dancer ':syntax';
 use re '/aa';
 
 use Dancer::Plugin::DBIC;
+use Dancer::Plugin::EscapeHTML;
 use Dancer::Plugin::Passphrase;
+use Dancer::Plugin::Res;
 use Geography::Countries qw(countries);
 use Locale::US;
 use Try::Tiny;
@@ -13,6 +15,7 @@ our $VERSION = '0.0001';
 my $STATES = [ Locale::US->new()->all_state_codes ];
 
 hook before => sub {
+    #session user_id => 'test';
     return if session('user_id')
         or request->path_info =~ m{^/(login|create-user)};
     var requested_path => request->path_info;
@@ -87,9 +90,10 @@ get '/' => sub {
     template cluster => {
         #countries => [ countries() ],
         states            => $STATES,
-        cluster           => $cluster,
-        neighborhoods     => [ $cluster->neighborhoods ],
-        core_team_members => [ $cluster->core_team_members ],
+        cluster           => dbic_to_hash($cluster),
+        neighborhoods     => [ dbic_to_hash($cluster->neighborhoods) ],
+        core_team_members => [ dbic_to_hash($cluster->core_team_members) ],
+        #core_team_members => [ $cluster->core_team_members ],
         clusters => [
             'Fairfax',
             'Falls Church',
@@ -103,6 +107,15 @@ get '/' => sub {
             'Southeastern States',
             'Southwestern States',
         ],
+    };
+};
+
+get '/neighborhoods/:id' => sub {
+    my $nhood = cluster()->neighborhoods->find(param 'id');
+    return res 404, template '404' unless $nhood;
+    template neighborhood => {
+        nhood => $nhood,
+        team_members => [ dbic_to_hash($nhood->teaching_team_members) ],
     };
 };
 
@@ -139,7 +152,7 @@ post '/ajax/delete_core_member' => sub {
         $m->delete();
     } catch {
         error "Could not delete core team member: $_";
-        return status 500;
+        return res 500;
     };
     return '';
 };
@@ -151,7 +164,7 @@ post '/ajax/add_neighborhood' => sub {
         cluster()->add_to_neighborhoods($params);
     } catch {
         error "Could not add neighborhood: $_";
-        return status 500;
+        return res 500;
     };
     $params->{id} = $nhood->id;
     return $params;
@@ -162,16 +175,35 @@ post '/ajax/delete_nhood' => sub {
     info "Deleting neighborhood: ", $params;
     try {
         my $m = cluster()->neighborhoods({ id => param 'id' });
-        $m->delete();
+        $m->delete_all();
     } catch {
         error "Could not delete neighborhood: $_";
-        return status 500;
+        return res 500;
     };
     return '';
 };
 
+post '/ajax/add_teaching_team_member' => sub {
+    my $params = params;
+    info "Adding teaching team member: ", $params;
+    my $nhood_id = delete $params->{nhood_id};
+    my $nhood = schema->resultset('Neighborhood')->find($nhood_id);
+    my $member = try {
+        $nhood->add_to_teaching_team_members($params);
+    } catch {
+        error "Could not add core team member: $_";
+        return status 500;
+    };
+    $params->{id} = $member->id;
+    return $params;
+};
+
 sub cluster {
     return schema->resultset('Cluster')->find({ user_id => session 'user_id' });
+}
+sub dbic_to_hash {
+    my (@rows) = @_;
+    return map +{ $_->get_columns }, @rows;
 }
 
 true;

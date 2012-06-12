@@ -50,3 +50,17 @@ CREATE TABLE neighborhood (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE teaching_team_member (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    neighborhood_id INT NOT NULL,
+    first_name      VARCHAR(100),
+    last_name       VARCHAR(100),
+    phone           VARCHAR(100),
+    email           VARCHAR(100),
+    role            VARCHAR(100),
+    availability    VARCHAR(100),
+    active          INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (neighborhood_id) REFERENCES neighborhood (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+

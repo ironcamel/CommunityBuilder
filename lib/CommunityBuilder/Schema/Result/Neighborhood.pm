@@ -157,9 +157,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
+=head2 teaching_team_members
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-05-26 18:11:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:r3YK3r6U+gtw7LQyOy1MWw
+Type: has_many
+
+Related object: L<CommunityBuilder::Schema::Result::TeachingTeamMember>
+
+=cut
+
+__PACKAGE__->has_many(
+  "teaching_team_members",
+  "CommunityBuilder::Schema::Result::TeachingTeamMember",
+  { "foreign.neighborhood_id" => "self.id" },
+  { cascade_copy => 1, cascade_delete => 1 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-06-04 04:37:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nz4qP2qYrNRuzCk7KiWOsw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
