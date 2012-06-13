@@ -1,0 +1,179 @@
+<table class="table" style="margin-bottom=10px">
+  <thead>
+    <tr colspan="2">
+      <th class="span2">[% nhood.name %]</th>
+      <th>
+        <button class="btn delete_nhood" type="button" data-id="[% n.id %]">
+          <i class="icon-remove"></i>
+        </button>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr> <td>Name</td> <td class="">[% nhood.name %]</td> </tr>
+    <tr> <td>Coordinator</td> <td>[% nhood.coordinator %]</td> </tr>
+    <tr> <td>Address</td> <td>[% nhood.address %]</td> </tr>
+    <tr> <td>City</td> <td>[% nhood.city %]</td> </tr>
+    <tr> <td>State</td> <td>[% nhood.state %]</td> </tr>
+    <tr> <td>Zip Code</td> <td>[% nhood.zip_code %]</td> </tr>
+    <tr> <td>Office Contact</td> <td>[% nhood.office_name %]</td> </tr>
+    <tr> <td>Office Title</td> <td>[% nhood.office_title %]</td> </tr>
+    <tr> <td>Office Phone</td> <td>[% nhood.office_phone %]</td> </tr>
+    <tr> <td>Office Email</td> <td>[% nhood.office_email %]</td> </tr>
+    <tr> <td>Office Notes</td> <td>[% nhood.notes %]</td> </tr>
+  </tbody>
+</table>
+
+<form class="modal form-horizontal well" id="team_modal" style="display:none">
+
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">&times;</button>
+    <h3>New Member</h3>
+  </div>
+  <div class="modal-body">
+
+    <div class="control-group">
+      <label class="control-label" for="member_first_name">First Name</label>
+      <div class="controls">
+        <input id="member_first_name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="member_last_name">Last Name</label>
+      <div class="controls">
+        <input id="member_last_name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="member_phone">Phone</label>
+      <div class="controls">
+        <input id="member_phone" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="member_email">Email</label>
+      <div class="controls">
+        <input id="member_email" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="member_role">Role</label>
+      <div class="controls">
+        <input id="member_role" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label"
+          for="member_availability">Availability</label>
+      <div class="controls">
+        <input id="member_availability" type="text" />
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+    <button id="add_team_member" class="btn btn-primary" type="button">
+      Add
+    </button>
+  </div>
+
+</form>
+
+<form class="form-horizontal well" accept-charset="utf-8">
+  <fieldset>  
+    <legend>Teaching Team Members</legend>
+    <table id="teaching_team_table" class="table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Availability</th>
+          <th>Active</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        [% FOREACH m IN team_members %]
+        <tr data-name="[% m.first_name %] [% m.last_name %]">
+          <td>[% m.first_name %]</td>
+          <td>[% m.last_name %]</td>
+          <td>[% m.phone %]</td>
+          <td>[% m.email %]</td>
+          <td>[% m.role %]</td>
+          <td>[% m.availability %]</td>
+          <td>[% m.active ? 'yes' : 'no' %]</td>
+          <td>
+            <button class="btn edit_member" type="button" disabled="disabled"
+                data-id="[% m.id %]"><i class="icon-edit"></i></button>
+            <button class="btn delete_member" type="button"
+                data-id="[% m.id %]"><i class="icon-remove"></i></button>
+          </td>
+
+        </tr>
+        [% END %]
+      </tbody>
+    </table>
+    <button id="show_team_modal" class="btn btn-primary"
+        data-toggle="modal" data-target="#team_modal">
+      Add Member
+    </button>
+  </fieldset>  
+</form>
+
+<script id="member_tmpl" type="text/x-mustache-template">
+  <tr data-name="{{first_name}} {{last_name}}">
+    <td>{{first_name}}</td>
+    <td>{{last_name}}</td>
+    <td>{{phone}}</td>
+    <td>{{email}}</td>
+    <td>{{role}}</td>
+    <td>{{availability}}</td>
+    <td>yes</td>
+    <td>
+      <button id="edit_member_{{id}}" class="btn edit_member" type="button"
+          disabled="disabled"
+          data-id="{{id}}"><i class="icon-edit"></i></button>
+      <button id="delete_member_{{id}}" class="btn delete_member" type="button"
+          data-id="{{id}}"><i class="icon-remove"></i></button>
+    </td>
+  </tr>
+</script>
+
+<script type="text/javascript" charset="utf-8">
+$('#show_team_modal').click(function() {
+  $('#add_team_member').attr('disabled', false);
+});
+
+$('#add_team_member').click(function() {
+  $('#add_team_member').attr('disabled', true);
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/add_teaching_team_member",
+    type: "POST",
+    data: {
+      nhood_id     : '[% nhood.id %]',
+      first_name   : $('#member_first_name').val(),
+      last_name    : $('#member_last_name').val(),
+      phone        : $('#member_phone').val(),
+      email        : $('#member_email').val(),
+      role         : $('#member_role').val(),
+      availability : $('#member_availability').val()
+    }
+  }).done(function(data) {
+    $('#team_modal').modal('hide');
+    var tmpl = $('#member_tmpl').html();
+    $('#teaching_team_table tbody').append(Mustache.to_html(tmpl, data));
+    $('#delete_member_' + data.id).click(delete_member);
+  });
+});
+
+</script>

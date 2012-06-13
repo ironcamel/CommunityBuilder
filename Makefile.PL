@@ -7,7 +7,10 @@ WriteMakefile(
     LICENSE             => 'perl',
     PREREQ_PM => {
         'Test::More' => 0,
-        'YAML'       => 0,
+        'JSON'       => 0,
         'Dancer'     => 1.3095,
+        'Plack'      => 0,
+        'Template'   => 0,
+        'YAML'       => 0,
     },
 );

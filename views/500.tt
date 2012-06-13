@@ -1,0 +1,5 @@
+<link rel="stylesheet" href="[% request.uri_base %]/css/error.css" />
+<h1>Error 500</h1>
+<div id="content">
+<h2>Internal Server Error</h2><p>Wooops, something went wrong</p>
+</div>

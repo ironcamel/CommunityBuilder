@@ -1,0 +1,5 @@
+<link rel="stylesheet" href="[% request.uri_base %]/css/error.css" />
+<h1>Error 404</h1>
+<div id="content">
+<h2>Page Not Found</h2><p>Sorry, this is page does not exist.</p>
+</div>
