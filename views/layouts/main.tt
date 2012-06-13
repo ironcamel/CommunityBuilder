@@ -5,7 +5,7 @@
 <title>[% settings.appname %]</title>
 <link rel="stylesheet" href="[% request.uri_base %]/css/style.css" />
 <link href="[% request.uri_base %]/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="[% request.uri_base %]/bootstrap/js/bootstrap.min.js"></script>
 <script src="[% request.uri_base %]/js/mustache.js"></script>
 <!--
@@ -13,7 +13,7 @@
 
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
-  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 
 </head>
