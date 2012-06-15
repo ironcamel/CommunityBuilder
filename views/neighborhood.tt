@@ -3,7 +3,7 @@
     <tr colspan="2">
       <th class="span2">[% nhood.name %]</th>
       <th>
-        <button class="btn delete_nhood" type="button" data-id="[% n.id %]">
+        <button id="delete_nhood" class="btn" type="button" data-id="[% nhood.id %]">
           <i class="icon-remove"></i>
         </button>
       </th>
@@ -175,5 +175,20 @@ $('#add_team_member').click(function() {
     $('#delete_member_' + data.id).click(delete_member);
   });
 });
+
+function delete_nhood() {
+  var id = $(this).data('id');
+  var sure = confirm('Are you sure you want to delete this neighborhood?');
+  if (!sure) return false;
+  $.ajax({
+    url: "[% request.uri_base %]/ajax/delete_nhood",
+    type: "POST",
+    data: { id : id }
+  }).done(function() {
+    location.href = "[% request.uri_base %]/"
+  });
+};
+
+$('#delete_nhood').click(delete_nhood);
 
 </script>

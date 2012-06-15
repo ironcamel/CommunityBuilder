@@ -128,7 +128,18 @@
     <div class="control-group">
       <label class="control-label" for="core_role">Role</label>
       <div class="controls">
-        <input id="core_role" type="text" />
+        <select id="core_role">
+          <option value="ATC Member">ATC Member</option>
+          <option value="ATC Secretary">ATC Secretary</option>
+          <option value="CIC - CCC">CIC - CCC</option>
+          <option value="CIC - JYC">CIC - JYC</option>
+          <option value="CIC - SCC">CIC - SCC</option>
+          <option value="Auxiliary Board Member">Auxiliary Board Member</option>
+          <option value="Auxiliary Board Assistant">Auxiliary Board Assistant</option>
+          <option value="Teaching Team Member">Teaching Team Member</option>
+          <option value="Neighborhood Coordinator">Neighborhood Coordinator</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
     </div>
 
@@ -309,7 +320,6 @@
   <fieldset>  
     <legend>Neighborhoods</legend>
 
-
     <table id="nhoods_table" class="table" style="margin-bottom=10px">
       <thead>
         <tr>
@@ -323,24 +333,21 @@
         </tr>
       </thead>
       <tbody>
-    [% FOREACH n IN neighborhoods %]
+        [% FOREACH n IN neighborhoods %]
         <tr>
-          <td>[% n.name %]</td>
+          <td>
+            <a href="[% request.uri_base %]/neighborhoods/[% n.id %]">[% n.name %]</a>
+          </td>
           <td>[% n.coordinator %]</td>
           <td>[% n.address %]</td>
           <td>[% n.city %]</td>
           <td>[% n.state %]</td>
           <td>[% n.zip_code %]</td>
           <td>
-            <a class="btn edit_nhood"
-                href="[% request.uri_base %]/neighborhoods/[% n.id %]"><i class="icon-edit"></i></a>
-            <button class="btn delete_nhood" type="button"
-                    data-id="[% n.id %]">
-              <i class="icon-remove"></i>
-            </button>
+            <a class="btn" href="[% request.uri_base %]/neighborhoods/[% n.id %]"><i class="icon-edit"></i></a>
           </td>
         </tr>
-    [% END %]
+        [% END %]
       </tbody>
     </table>
 
@@ -354,18 +361,14 @@
 
 <script id="nhood_tmpl" type="text/x-mustache-template">
   <tr>
-    <td>{{name}}</td>
+    <td><a href="[% request.uri_base %]/neighborhoods/{{id}}">{{name}}</a></td>
     <td>{{coordinator}}</td>
     <td>{{address}}</td>
     <td>{{city}}</td>
     <td>{{state}}</td>
     <td>{{zip_code}}</td>
     <td>
-      <a class="btn edit_nhood" href="[% request.uri_base %]/neighborhoods/{{id}}"><i class="icon-edit"></i></a>
-      <button id="delete_nhood_{{id}}" class="btn delete_nhood" type="button"
-              data-id="{{id}}">
-        <i class="icon-remove"></i>
-      </button>
+      <a class="btn" href="[% request.uri_base %]/neighborhoods/{{id}}"><i class="icon-edit"></i></a>
     </td>
   </tr>
 </script>
@@ -448,22 +451,12 @@ $('#show_neighborhood_modal').click(function() {
   $('#add_neighborhood').attr('disabled', false);
 });
 
-function delete_nhood() {
-  var id = $(this).data('id');
-  var row = $(this).parents('tr');
-  var sure = confirm('Are you sure you want to delete this neighborhood?');
-  if (!sure) return false;
-  $.ajax({
-    url: "[% request.uri_base %]/ajax/delete_nhood",
-    type: "POST",
-    data: { id : id }
-  }).done(function() {
-    row.remove();
-  });
-  return false;
-};
-
 $('#add_neighborhood').click(function() {
+  var name = $('#nhood_name').val();
+  if (!name) {
+    alert('Please enter a neighborhood name.');
+    return;
+  }
   $('#add_neighborhood').attr('disabled', true);
   $.ajax({
     url: "[% request.uri_base %]/ajax/add_neighborhood",
@@ -485,7 +478,6 @@ $('#add_neighborhood').click(function() {
     $('#neighborhood_modal').modal('hide');
     var tmpl = $('#nhood_tmpl').html();
     $('#nhoods_table tbody').append(Mustache.to_html(tmpl, data));
-    $('#delete_nhood_' + data.id).click(delete_nhood);
   });
 });
 
@@ -498,7 +490,5 @@ $('.nhood_link').click(function() {
   $(this).parents('table').find('tbody').toggle();
   return false;
 });
-
-$('.delete_nhood').click(delete_nhood);
 
 </script>
