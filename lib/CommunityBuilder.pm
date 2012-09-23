@@ -60,7 +60,7 @@ post '/login' => sub {
                 ? "The username '$username' is already taken."
                 : "Could not create user '$username'";
             return template login => { err_msg => $err_msg };
-        }
+        };
         session user_id => $username;
         return redirect uri_for '/';
     } else { # Handle login
@@ -131,29 +131,40 @@ post '/ajax/update_cluster' => sub {
     return '';
 };
 
+get '/ajax/get_core_member' => sub {
+    my $id = param 'id';
+    debug "Getting core team member with id: $id";
+    my $m = cluster()->core_team_members->find({ id => $id }) or return res 404;
+    return { $m->get_columns };
+};
+
 post '/ajax/add_core_member' => sub {
     my $params = params;
     info "Adding core team member: ", $params;
-    my $member = try {
-        cluster()->add_to_core_team_members($params);
-    } catch {
-        error "Could not add core team member: $_";
-        return status 500;
+    my $member = eval { cluster()->add_to_core_team_members($params) };
+    if ($@) {
+        error "Could not add core team member: $@";
+        return res 500, "Could not add core team member";
     };
     $params->{id} = $member->id;
+    return $params;
+};
+
+post '/ajax/edit_core_member' => sub {
+    my $params = params;
+    my $id = param 'id';
+    info "Updating core team member: ", $params;
+    my $m = cluster()->core_team_members->find({ id => $id }) or return res 404;
+    $m->update($params) if $m;
     return $params;
 };
 
 post '/ajax/delete_core_member' => sub {
     my $params = params;
     info "Deleting core team member: ", $params;
-    try {
-        my $m = cluster()->core_team_members({ id => param 'id' });
-        $m->delete();
-    } catch {
-        error "Could not delete core team member: $_";
-        return res 500;
-    };
+    my $m = cluster()->core_team_members({ id => param 'id' })
+        or return res 404;
+    $m->delete();
     return '';
 };
 

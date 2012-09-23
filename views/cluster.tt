@@ -93,7 +93,7 @@
 <form class="modal form-horizontal well" id="core_team_modal" style="display:none">
   <div class="modal-header">
     <button class="close" data-dismiss="modal">&times;</button>
-    <h3>New Member</h3>
+    <h3 id="core_modal_title">New Member</h3>
   </div>
   <div class="modal-body">
 
@@ -147,7 +147,9 @@
 
   <div class="modal-footer">
     <button type="button" class="btn" data-dismiss="modal">Cancel</button>
-    <button id="add_core_member" class="btn btn-primary" type="button">Add</button>
+    <button id="save_core_member" class="btn btn-primary" type="button">
+      Save
+    </button>
   </div>
 
 </form>
@@ -169,7 +171,8 @@
       </thead>
       <tbody>
         [% FOREACH m IN core_team_members %]
-        <tr data-name="[% m.first_name %] [% m.last_name %]">
+        <tr data-name="[% m.first_name %] [% m.last_name %]"
+            id="core_row_[% m.id %]">
           <td>[% m.first_name %]</td>
           <td>[% m.last_name %]</td>
           <td>[% m.phone %]</td>
@@ -177,8 +180,9 @@
           <td>[% m.role %]</td>
           <td>[% m.active ? 'yes' : 'no' %]</td>
           <td>
-            <button class="btn edit_core" type="button" disabled="disabled"
-                data-id="[% m.id %]"><i class="icon-edit"></i></button>
+            <button class="btn edit_core" type="button" data-id="[% m.id %]">
+              <i class="icon-edit"></i>
+            </button>
             <button class="btn delete_core" type="button"
                 data-id="[% m.id %]"><i class="icon-remove"></i></button>
           </td>
@@ -187,15 +191,15 @@
         [% END %]
       </tbody>
     </table>
-    <button id="show_core_modal" class="btn btn-primary" data-toggle="modal"
-        data-target="#core_team_modal">
+    <button id="show_core_modal" class="btn btn-primary" type="button">
       Add Member
     </button>
   </fieldset>  
 </form>
 
+
 <script id="core_member_tmpl" type="text/x-mustache-template">
-  <tr data-name="{{first_name}} {{last_name}}">
+  <tr data-name="{{first_name}} {{last_name}}" id="core_row_{{id}}">
     <td>{{first_name}}</td>
     <td>{{last_name}}</td>
     <td>{{phone}}</td>
@@ -204,8 +208,9 @@
     <td>yes</td>
     <td>
       <button id="edit_core_{{id}}" class="btn edit_core" type="button"
-          disabled="disabled"
-          data-id="{{id}}"><i class="icon-edit"></i></button>
+          data-id="{{id}}">
+        <i class="icon-edit"></i>
+      </button>
       <button id="delete_core_{{id}}" class="btn delete_core" type="button"
           data-id="{{id}}"><i class="icon-remove"></i></button>
     </td>
@@ -373,13 +378,6 @@
   </tr>
 </script>
 
-<!--
-<button id="zzz" type="button">template test</button>
-<div id='aaa'>
-</div>
--->
-
-
 <script>
 
 function delete_core_member() {
@@ -400,10 +398,6 @@ function delete_core_member() {
 
 $('.delete_core').click(delete_core_member);
 
-$('.edit_core').click(function() {
-  return false;
-});
-
 $('#save-cluster').click(function() {
   $('#save-info').show();
   $.ajax({
@@ -423,28 +417,74 @@ $('#save-cluster').click(function() {
   });
 });
 
+// Add Core Member button
 $('#show_core_modal').click(function() {
-  $('#add_core_member').attr('disabled', false);
+  $('#save_core_member').attr('disabled', false);
+  $('#save_core_member').data('is_add', true);
+  $('#core_modal_title').html('New Member');
+  $('#core_team_modal').modal();
 });
 
-$('#add_core_member').click(function() {
-  $('#add_core_member').attr('disabled', true);
+// Edit Core Member button
+function edit_core_member() {
+  $('#core_modal_title').html('Edit Member');
+  $('#save_core_member').attr('disabled', false);
+  $('#save_core_member').data('is_add', false);
+  var core_member_id = $(this).data('id');
+  $('#save_core_member').data('id', core_member_id);
+
   $.ajax({
-    url: "[% request.uri_base %]/ajax/add_core_member",
-    type: "POST",
-    data: {
-      first_name : $('#core_first_name').val(),
-      last_name  : $('#core_last_name').val(),
-      phone      : $('#core_phone').val(),
-      email      : $('#core_email').val(),
-      role       : $('#core_role').val()
-    }
+    url: "[% request.uri_base %]/ajax/get_core_member",
+    type: "GET",
+    data: { id: core_member_id },
   }).done(function(data) {
-    $('#core_team_modal').modal('hide');
-    var tmpl = $('#core_member_tmpl').html();
-    $('#core_team_table tbody').append(Mustache.to_html(tmpl, data));
-    $('#delete_core_' + data.id).click(delete_core_member);
+    console.log(data);
+    $('#core_first_name').val(data.first_name);
+    $('#core_last_name').val(data.last_name);
+    $('#core_phone').val(data.phone);
+    $('#core_email').val(data.email);
+    $('#core_role').val(data.role);
+    $('#core_team_modal').data('id', core_member_id);
+    $('#core_team_modal').modal();
   });
+};
+$('.edit_core').click(edit_core_member);
+
+$('#save_core_member').click(function() {
+  $('#save_core_member').attr('disabled', true);
+  var form_data = {
+    first_name : $('#core_first_name').val(),
+    last_name  : $('#core_last_name').val(),
+    phone      : $('#core_phone').val(),
+    email      : $('#core_email').val(),
+    role       : $('#core_role').val()
+  };
+  if ($(this).data('is_add')) {
+    $.ajax({
+      url: "[% request.uri_base %]/ajax/add_core_member",
+      type: "POST",
+      data: form_data,
+    }).done(function(data) {
+      $('#core_team_modal').modal('hide');
+      var tmpl = $('#core_member_tmpl').html();
+      $('#core_team_table tbody').append(Mustache.to_html(tmpl, data));
+      $('#edit_core_' + data.id).click(edit_core_member);
+    });
+  } else {
+    form_data.id = $('#core_team_modal').data('id');
+    $.ajax({
+      url: "[% request.uri_base %]/ajax/edit_core_member",
+      type: "POST",
+      data: form_data,
+    }).done(function(data) {
+      $('#core_row_' + form_data.id).remove();
+      $('#core_team_modal').modal('hide');
+      var tmpl = $('#core_member_tmpl').html();
+      $('#core_team_table tbody').append(Mustache.to_html(tmpl, data));
+      $('#delete_core_' + data.id).click(delete_core_member);
+      $('#edit_core_' + data.id).click(edit_core_member);
+    });
+  }
 });
 
 $('#show_neighborhood_modal').click(function() {
@@ -492,3 +532,4 @@ $('.nhood_link').click(function() {
 });
 
 </script>
+
