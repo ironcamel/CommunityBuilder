@@ -1,18 +1,33 @@
+use utf8;
 package CommunityBuilder::Schema::Result::CoreTeamMember;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CommunityBuilder::Schema::Result::CoreTeamMember
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CommunityBuilder::Schema::Result::CoreTeamMember
+=head1 TABLE: C<core_team_member>
 
 =cut
 
@@ -100,6 +115,17 @@ __PACKAGE__->add_columns(
   "date_appointed",
   { data_type => "date", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
@@ -116,12 +142,12 @@ __PACKAGE__->belongs_to(
   "cluster",
   "CommunityBuilder::Schema::Result::Cluster",
   { id => "cluster_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-05-26 06:34:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gq57r2tHQ3D21gI+UFFm5Q
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-11-12 10:48:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3lrklI1Eu8UTJsDDZjwN4g
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

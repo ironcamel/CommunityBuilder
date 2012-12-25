@@ -1,18 +1,33 @@
+use utf8;
 package CommunityBuilder::Schema::Result::Cluster;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CommunityBuilder::Schema::Result::Cluster
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CommunityBuilder::Schema::Result::Cluster
+=head1 TABLE: C<cluster>
 
 =cut
 
@@ -115,25 +130,34 @@ __PACKAGE__->add_columns(
   "num_comm",
   { data_type => "int", default_value => 0, is_nullable => 0 },
 );
-__PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("user_id_unique", ["user_id"]);
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 user
+=over 4
 
-Type: belongs_to
+=item * L</id>
 
-Related object: L<CommunityBuilder::Schema::Result::User>
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "user",
-  "CommunityBuilder::Schema::Result::User",
-  { id => "user_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+__PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<user_id_unique>
+
+=over 4
+
+=item * L</user_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("user_id_unique", ["user_id"]);
+
+=head1 RELATIONS
 
 =head2 core_team_members
 
@@ -165,9 +189,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 1, cascade_delete => 1 },
 );
 
+=head2 user
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-05-26 18:11:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:TOMH3kfUja6WuPo+XrP07w
+Type: belongs_to
+
+Related object: L<CommunityBuilder::Schema::Result::User>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "user",
+  "CommunityBuilder::Schema::Result::User",
+  { id => "user_id" },
+  { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-11-12 10:48:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LUY2Z+aiGNFTzMZxGiN0tQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

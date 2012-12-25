@@ -1,18 +1,33 @@
+use utf8;
 package CommunityBuilder::Schema::Result::User;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CommunityBuilder::Schema::Result::User
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CommunityBuilder::Schema::Result::User
+=head1 TABLE: C<user>
 
 =cut
 
@@ -48,6 +63,17 @@ __PACKAGE__->add_columns(
   "email",
   { data_type => "varchar", is_nullable => 1, size => 100 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
@@ -68,8 +94,8 @@ __PACKAGE__->might_have(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-05-21 03:02:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:g7hYAkMYhuS1yYLtOGnebg
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-11-12 10:48:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P4ySQU/HAlIN9Xq817ZOYQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

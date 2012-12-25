@@ -1,18 +1,33 @@
+use utf8;
 package CommunityBuilder::Schema::Result::Neighborhood;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CommunityBuilder::Schema::Result::Neighborhood
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CommunityBuilder::Schema::Result::Neighborhood
+=head1 TABLE: C<neighborhood>
 
 =cut
 
@@ -138,6 +153,17 @@ __PACKAGE__->add_columns(
   "notes",
   { data_type => "text", default_value => "", is_nullable => 0 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
@@ -154,7 +180,22 @@ __PACKAGE__->belongs_to(
   "cluster",
   "CommunityBuilder::Schema::Result::Cluster",
   { id => "cluster_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 homes
+
+Type: has_many
+
+Related object: L<CommunityBuilder::Schema::Result::Home>
+
+=cut
+
+__PACKAGE__->has_many(
+  "homes",
+  "CommunityBuilder::Schema::Result::Home",
+  { "foreign.neighborhood_id" => "self.id" },
+  { cascade_copy => 1, cascade_delete => 1 },
 );
 
 =head2 teaching_team_members
@@ -173,8 +214,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-06-04 04:37:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nz4qP2qYrNRuzCk7KiWOsw
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-23 08:02:24
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jDpVgvyKP8fdALh+acOYFQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

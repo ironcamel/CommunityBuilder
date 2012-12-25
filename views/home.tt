@@ -1,0 +1,178 @@
+[% base = request.uri_base %]
+
+<form class="form-horizontal well" id="nhood_form" method="post"
+    action="[% base _ request.path_info %]/update">
+  <fieldset>  
+    <legend>Home</legend>
+
+    <div class="row">
+      <div class="span5">
+  
+        <div class="control-group">
+          <label class="control-label" for="home_name">Family Name</label>
+          <div class="controls">
+            <input id="home_name" type="text" value="[% home.name %]"/>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="home_addr">Address</label>
+          <div class="controls">
+            <input id="home_addr" type="text" value="[% home.address %]"/>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="home_city">City</label>
+          <div class="controls">
+            <input id="home_city" type="text" value="[% home.city %]"/>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="home_state">State</label>
+          <div class="controls">
+            <input id="home_state" type="text" value="[% home.state %]"/>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="home_zip">Zip Code</label>
+          <div class="controls">
+            <input id="home_zip" type="text" value="[% home.zip_code %]"/>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="home_phone">Phone</label>
+          <div class="controls">
+            <input id="home_phone" type="text" value="[% home.phone %]"/>
+          </div>
+        </div>
+
+      </div> <!-- end span5 -->
+
+      <div class="span5">
+
+        <div class="control-group">
+          <label class="control-label" for="anna">Anna</label>
+          <div class="controls">
+            <select name="anna" id="anna" class="input-mini">
+              <option [% home.anna ? 'selected' : '' %]
+                  value="[% 1 %]">yes</option>
+              <option [% ! home.anna ? 'selected' : '' %]
+                  value="[% 0 %]">no</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="devotional">Devotional</label>
+          <div class="controls">
+            <select name="devotional" id="devotional" class="input-mini">
+              <option [% home.devotional ? 'selected' : '' %]
+                  value="[% 1 %]">yes</option>
+              <option [% ! home.devotional ? 'selected' : '' %]
+                  value="[% 0 %]">no</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="home_notes">Notes</label>
+          <div class="controls">
+            <textarea id="home_notes" type="text"/>
+              [% home.notes %]
+            </textarea>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+          <button id="delete_home" class="btn" type="button"
+              disabled="disabled"
+              data-id="[% home.id %]">
+            Delete Home <i class="icon-remove"></i>
+          </button>
+          </div>
+        </div>
+
+      </div> <!-- end span5 -->
+
+    </div> <!-- end row -->
+
+    <button id="update_home_btn" class="btn btn-primary"
+        disabled="disabled">
+      Update Home
+    </button>
+
+  </fieldset>  
+</form>
+
+<form class="modal form-horizontal well" id="seeker_modal" method="post"
+    action="[% base _ request.path %]/seekers" style="display:none">
+
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">&times;</button>
+    <h3>New Seeker</h3>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="control-group">
+      <label class="control-label" for="seeker_name">Name</label>
+      <div class="controls">
+        <input id="seeker_name" name="name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="seeker_phone">Phone</label>
+      <div class="controls">
+        <input id="seeker_phone" name="phone" type="text" />
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+    <button id="add_redident" class="btn btn-primary" type="submit">
+      Add
+    </button>
+  </div>
+
+</form>
+
+<form method="post" class="well" accept-charset="utf-8">
+  <fieldset>  
+    <legend>Seekers</legend>
+    <table id="res_tbl" class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Anna</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOR seeker IN seekers %]
+      <tr>
+        <td>
+          <a href="[% base _ request.path_info %]/seekers/[% seeker.id %]">[% seeker.name %]</a>
+        </td>
+        <td>[% seeker.phone %]</td>
+        <td>[% seeker.anna ? 'yes' : 'no' %]</td>
+        <td></td>
+      </tr>
+      [% END %]
+      </tbody>
+    </table>
+
+    <button id="add_res_btn" class="btn btn-primary" type="button"
+          data-toggle="modal" data-target="#seeker_modal">
+      Add Seeker
+    </button>
+  </fieldset>  
+</form>

@@ -64,3 +64,35 @@ CREATE TABLE teaching_team_member (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE home (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    neighborhood_id INT,
+    name            VARCHAR(100),
+    address         VARCHAR(200),
+    city            VARCHAR(100),
+    state           VARCHAR(2),
+    zip_code        VARCHAR(100),
+    phone           VARCHAR(100),
+    anna            INT NOT NULL DEFAULT 0,
+    devotional      INT NOT NULL DEFAULT 0,
+    created         DATE,
+    modified        DATE,
+    notes           TEXT,
+    FOREIGN KEY (neighborhood_id) REFERENCES neighborhood (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE seeker (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    home_id   INT,
+    name      VARCHAR(100),
+    phone     VARCHAR(100),
+    email     VARCHAR(100),
+    anna      INT NOT NULL DEFAULT 0,
+    declared  DATE,
+    created   DATE,
+    modified  DATE,
+    notes     TEXT,
+    FOREIGN KEY (home_id) REFERENCES home (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);

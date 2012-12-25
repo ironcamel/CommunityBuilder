@@ -6,9 +6,10 @@ use Dancer::Plugin::DBIC;
 use Dancer::Plugin::EscapeHTML;
 use Dancer::Plugin::Passphrase;
 use Dancer::Plugin::Res;
+use DateTime;
 use Geography::Countries qw(countries);
 use Locale::US;
-use Try::Tiny;
+use TryCatch;
 
 our $VERSION = '0.0001';
 
@@ -54,13 +55,13 @@ post '/login' => sub {
                 schema->resultset('User')->create($user);
                 schema->resultset('Cluster')->create({ user_id => $username });
             });
-        } catch {
-            error "Error creating user in db: $_";
-            my $err_msg = /column id is not unique/
+        } catch ($err) {
+            error "Error creating user in db: $err";
+            my $err_msg = $err =~ /column id is not unique/
                 ? "The username '$username' is already taken."
                 : "Could not create user '$username'";
             return template login => { err_msg => $err_msg };
-        };
+        }
         session user_id => $username;
         return redirect uri_for '/';
     } else { # Handle login
@@ -111,12 +112,59 @@ get '/' => sub {
 };
 
 get '/neighborhoods/:id' => sub {
-    my $nhood = cluster()->neighborhoods->find(param 'id');
-    return res 404, template '404' unless $nhood;
+    my $nhood = cluster()->neighborhoods->find(param 'id')
+        or return res 404, template '404';
     template neighborhood => {
-        nhood => $nhood,
+        nhood        => $nhood,
         team_members => [ dbic_to_hash($nhood->teaching_team_members) ],
+        homes        => [ dbic_to_hash($nhood->homes) ],
     };
+};
+
+post '/neighborhoods/:nid/homes' => sub {
+    my $nid = param 'nid';
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template '404';
+    my $address = param 'address'
+        or return res 400, 'The address is missing';
+    my $now = DateTime->now;
+    $nhood->homes->create({
+        params('body'),
+        created => $now->ymd,
+        created => $now->ymd,
+    });
+    redirect uri_for "/neighborhoods/$nid";
+};
+
+get '/neighborhoods/:nid/homes/:hid' => sub {
+    my $nid = param 'nid';
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template '404';
+    my $home_id = param 'hid';
+    my $home = $nhood->homes->find($home_id)
+        or return res 404, 'No such home';
+    template home => {
+        home    => $home,
+        seekers => [ dbic_to_hash($home->seekers->all) ],
+    };
+};
+
+post '/neighborhoods/:nid/homes/:hid/seekers' => sub {
+    my $nid = param 'nid';
+    my $home_id = param 'hid';
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template '404';
+    my $home = $nhood->homes->find($home_id)
+        or return res 404, template '404';
+    my $name = param 'name'
+        or return res 400, 'The name is missing';
+    my $now = DateTime->now;
+    $home->seekers->create({
+        params('body'),
+        created => $now->ymd,
+        created => $now->ymd,
+    });
+    redirect uri_for "/neighborhoods/$nid/homes/$home_id";
 };
 
 post '/ajax/update_cluster' => sub {
@@ -124,8 +172,8 @@ post '/ajax/update_cluster' => sub {
     info "Updating cluster: ", $params;
     try {
         cluster()->update($params);
-    } catch {
-        error "Could not update cluster: $_";
+    } catch ($err) {
+        error "Could not update cluster: $err";
         return status 500;
     };
     return '';
@@ -173,10 +221,10 @@ post '/ajax/add_neighborhood' => sub {
     info "Adding neighborhood: ", $params;
     my $nhood = try {
         cluster()->add_to_neighborhoods($params);
-    } catch {
-        error "Could not add neighborhood: $_";
+    } catch ($err) {
+        error "Could not add neighborhood: $err";
         return res 500;
-    };
+    }
     $params->{id} = $nhood->id;
     return $params;
 };
@@ -187,10 +235,10 @@ post '/ajax/delete_nhood' => sub {
     try {
         my $m = cluster()->neighborhoods({ id => param 'id' });
         $m->delete_all();
-    } catch {
-        error "Could not delete neighborhood: $_";
+    } catch ($err) {
+        error "Could not delete neighborhood: $err";
         return res 500;
-    };
+    }
     return '';
 };
 
@@ -201,10 +249,10 @@ post '/ajax/add_teaching_team_member' => sub {
     my $nhood = schema->resultset('Neighborhood')->find($nhood_id);
     my $member = try {
         $nhood->add_to_teaching_team_members($params);
-    } catch {
-        error "Could not add core team member: $_";
-        return status 500;
-    };
+    } catch ($err) {
+        error "Could not add core team member: $err";
+        return res 500;
+    }
     $params->{id} = $member->id;
     return $params;
 };
@@ -212,9 +260,7 @@ post '/ajax/add_teaching_team_member' => sub {
 sub cluster {
     return schema->resultset('Cluster')->find({ user_id => session 'user_id' });
 }
-sub dbic_to_hash {
-    my (@rows) = @_;
-    return map +{ $_->get_columns }, @rows;
-}
+
+sub dbic_to_hash { map +{ $_->get_columns }, @_ }
 
 true;
