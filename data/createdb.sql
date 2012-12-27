@@ -96,3 +96,16 @@ CREATE TABLE seeker (
     FOREIGN KEY (home_id) REFERENCES home (id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE visit (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    home_id   INT,
+    date_of   DATE NOT NULL,
+    cycle     VARCHAR(100),
+    visitors  VARCHAR(1000),
+    created   DATE,
+    modified  DATE,
+    notes     TEXT,
+    FOREIGN KEY (home_id) REFERENCES home (id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);

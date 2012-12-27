@@ -1,3 +1,4 @@
+[% base = request.uri_base %]
 
 <form class="form-horizontal well" accept-charset="utf-8">
 
@@ -341,7 +342,7 @@
         [% FOREACH n IN neighborhoods %]
         <tr>
           <td>
-            <a href="[% request.uri_base %]/neighborhoods/[% n.id %]">[% n.name %]</a>
+            <a href="[% base %]/neighborhoods/[% n.id %]">[% n.name %]</a>
           </td>
           <td>[% n.coordinator %]</td>
           <td>[% n.address %]</td>
@@ -349,7 +350,7 @@
           <td>[% n.state %]</td>
           <td>[% n.zip_code %]</td>
           <td>
-            <a class="btn" href="[% request.uri_base %]/neighborhoods/[% n.id %]"><i class="icon-edit"></i></a>
+            <a class="btn" href="[% base %]/neighborhoods/[% n.id %]"><i class="icon-edit"></i></a>
           </td>
         </tr>
         [% END %]
@@ -366,14 +367,14 @@
 
 <script id="nhood_tmpl" type="text/x-mustache-template">
   <tr>
-    <td><a href="[% request.uri_base %]/neighborhoods/{{id}}">{{name}}</a></td>
+    <td><a href="[% base %]/neighborhoods/{{id}}">{{name}}</a></td>
     <td>{{coordinator}}</td>
     <td>{{address}}</td>
     <td>{{city}}</td>
     <td>{{state}}</td>
     <td>{{zip_code}}</td>
     <td>
-      <a class="btn" href="[% request.uri_base %]/neighborhoods/{{id}}"><i class="icon-edit"></i></a>
+      <a class="btn" href="[% base %]/neighborhoods/{{id}}"><i class="icon-edit"></i></a>
     </td>
   </tr>
 </script>
@@ -387,7 +388,7 @@ function delete_core_member() {
   var id = $(this).data('id');
   var row = $(this).parents('tr');
   $.ajax({
-    url: "[% request.uri_base %]/ajax/delete_core_member",
+    url: "[% base %]/ajax/delete_core_member",
     type: "POST",
     data: { id : id }
   }).done(function() {
@@ -401,7 +402,7 @@ $('.delete_core').click(delete_core_member);
 $('#save-cluster').click(function() {
   $('#save-info').show();
   $.ajax({
-    url: "[% request.uri_base %]/ajax/update_cluster",
+    url: "[% base %]/ajax/update_cluster",
     type: "POST",
     data: {
       region     : $('#region').val(),
@@ -434,7 +435,7 @@ function edit_core_member() {
   $('#save_core_member').data('id', core_member_id);
 
   $.ajax({
-    url: "[% request.uri_base %]/ajax/get_core_member",
+    url: "[% base %]/ajax/get_core_member",
     type: "GET",
     data: { id: core_member_id },
   }).done(function(data) {
@@ -461,7 +462,7 @@ $('#save_core_member').click(function() {
   };
   if ($(this).data('is_add')) {
     $.ajax({
-      url: "[% request.uri_base %]/ajax/add_core_member",
+      url: "[% base %]/ajax/add_core_member",
       type: "POST",
       data: form_data,
     }).done(function(data) {
@@ -473,7 +474,7 @@ $('#save_core_member').click(function() {
   } else {
     form_data.id = $('#core_team_modal').data('id');
     $.ajax({
-      url: "[% request.uri_base %]/ajax/edit_core_member",
+      url: "[% base %]/ajax/edit_core_member",
       type: "POST",
       data: form_data,
     }).done(function(data) {
@@ -499,7 +500,7 @@ $('#add_neighborhood').click(function() {
   }
   $('#add_neighborhood').attr('disabled', true);
   $.ajax({
-    url: "[% request.uri_base %]/ajax/add_neighborhood",
+    url: "[% base %]/ajax/add_neighborhood",
     type: "POST",
     data: {
       name         : $('#nhood_name').val(),

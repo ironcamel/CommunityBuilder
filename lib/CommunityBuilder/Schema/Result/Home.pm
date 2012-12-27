@@ -190,9 +190,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 1, cascade_delete => 1 },
 );
 
+=head2 visits
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-25 19:53:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2IwDGB3UJeg+cy79/ktY1g
+Type: has_many
+
+Related object: L<CommunityBuilder::Schema::Result::Visit>
+
+=cut
+
+__PACKAGE__->has_many(
+  "visits",
+  "CommunityBuilder::Schema::Result::Visit",
+  { "foreign.home_id" => "self.id" },
+  { cascade_copy => 1, cascade_delete => 1 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-26 11:28:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SGkI9EU1j3zvRg5LVq8QXQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

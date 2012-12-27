@@ -1,7 +1,8 @@
 [% base = request.uri_base %]
+[% home_path = base _ request.path_info %]
 
 <form class="form-horizontal well" id="nhood_form" method="post"
-    action="[% base _ request.path_info %]/update">
+    action="[% home_path %]/update">
   <fieldset>  
     <legend>Home</legend>
 
@@ -81,9 +82,7 @@
         <div class="control-group">
           <label class="control-label" for="home_notes">Notes</label>
           <div class="controls">
-            <textarea id="home_notes" type="text"/>
-              [% home.notes %]
-            </textarea>
+            <textarea id="home_notes" name="notes" type="text"/>[% home.notes %]</textarea>
           </div>
         </div>
 
@@ -110,7 +109,7 @@
 </form>
 
 <form class="modal form-horizontal well" id="seeker_modal" method="post"
-    action="[% base _ request.path %]/seekers" style="display:none">
+    action="[% home_path %]/seekers" style="display:none">
 
   <div class="modal-header">
     <button class="close" data-dismiss="modal">&times;</button>
@@ -123,6 +122,13 @@
       <label class="control-label" for="seeker_name">Name</label>
       <div class="controls">
         <input id="seeker_name" name="name" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="seeker_email">Email</label>
+      <div class="controls">
+        <input id="seeker_email" name="email" type="text" />
       </div>
     </div>
 
@@ -152,7 +158,9 @@
         <tr>
           <th>Name</th>
           <th>Phone</th>
+          <th>Email</th>
           <th>Anna</th>
+          <th>Declared</th>
           <th></th>
         </tr>
       </thead>
@@ -160,10 +168,15 @@
       [% FOR seeker IN seekers %]
       <tr>
         <td>
-          <a href="[% base _ request.path_info %]/seekers/[% seeker.id %]">[% seeker.name %]</a>
+          [% seeker.name %]
+          <!--
+          <a href="[% home_path %]/seekers/[% seeker.id %]">[% seeker.name %]</a>
+          -->
         </td>
         <td>[% seeker.phone %]</td>
+        <td>[% seeker.email %]</td>
         <td>[% seeker.anna ? 'yes' : 'no' %]</td>
+        <td>[% seeker.declared ? 'yes' : 'no' %]</td>
         <td></td>
       </tr>
       [% END %]
@@ -176,3 +189,119 @@
     </button>
   </fieldset>  
 </form>
+
+
+<!-- VISITS FORM -->
+
+<form class="modal form-horizontal well" id="visit_modal" method="post"
+    action="[% home_path %]/visits" style="display:none">
+
+  <div class="modal-header">
+    <button class="close" data-dismiss="modal">&times;</button>
+    <h3>New visit</h3>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="control-group">
+      <label class="control-label" for="visit_date">Date</label>
+      <div class="controls">
+        <input id="visit_date" name="date_of" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="visit_cycle">Cycle</label>
+      <div class="controls">
+        <input id="visit_cycle" name="cycle" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="visit_visitors">Visitor(s)</label>
+      <div class="controls">
+        <input id="visit_visitors" name="visitors" type="text" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="visit_notes">Notes</label>
+      <div class="controls">
+        <textarea id="visit_notes" name="notes" type="text"/>[% visitor.notes %]</textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+    <button class="btn btn-primary" type="submit">Add Visit</button>
+  </div>
+
+</form>
+
+<form class="well" accept-charset="utf-8">
+  <fieldset>  
+    <legend>Visits</legend>
+    <table id="res_tbl" class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Cycle</th>
+          <th>Visitors</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOR visit IN visits %]
+      <tr data-date_of="[% visit.date_of %]">
+        <td>
+        [% visit.date_of %]
+        <!--
+          <a href="[% home_path %]/visits/[% visit.id %]">[% visit.date_of %]</a>
+        -->
+        </td>
+        <td>[% visit.cycle %]</td>
+        <td>[% visit.visitors %]</td>
+        <td>[% visit.notes %]</td>
+        <td>
+          <button class="btn delete_visit" type="button"
+              data-nhood_id="[% nhood.id %]"
+              data-home_id="[% home.id %]"
+              data-visit_id="[% visit.id %]"
+          >
+            <i class="icon-remove"></i>
+          </button>
+        </td>
+      </tr>
+      [% END %]
+      </tbody>
+    </table>
+
+    <button id="add_res_btn" class="btn btn-primary" type="button"
+          data-toggle="modal" data-target="#visit_modal">
+      Add Visit
+    </button>
+  </fieldset>  
+</form>
+
+<script type="text/javascript" charset="utf-8">
+  
+$('.delete_visit').click(function delete_core_member() {
+  var date_of = $(this).parents('tr').data('date_of');
+  var sure = confirm('Delete the visit on ' + date_of + '?');
+  if (!sure) return;
+  var visit_id = $(this).data('visit_id');
+  var row = $(this).parents('tr');
+  $.ajax({
+    url: "[% base %]/ajax/delete_visit",
+    type: "POST",
+    data: { id : visit_id }
+  }).done(function() {
+    row.remove();
+  });
+  return false;
+});
+
+</script>

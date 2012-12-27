@@ -130,8 +130,8 @@ post '/neighborhoods/:nid/homes' => sub {
     my $now = DateTime->now;
     $nhood->homes->create({
         params('body'),
-        created => $now->ymd,
-        created => $now->ymd,
+        created  => $now->ymd,
+        modified => $now->ymd,
     });
     redirect uri_for "/neighborhoods/$nid";
 };
@@ -144,8 +144,10 @@ get '/neighborhoods/:nid/homes/:hid' => sub {
     my $home = $nhood->homes->find($home_id)
         or return res 404, 'No such home';
     template home => {
+        nhood   => $nhood,
         home    => $home,
         seekers => [ dbic_to_hash($home->seekers->all) ],
+        visits  => [ dbic_to_hash($home->visits->all) ],
     };
 };
 
@@ -161,8 +163,26 @@ post '/neighborhoods/:nid/homes/:hid/seekers' => sub {
     my $now = DateTime->now;
     $home->seekers->create({
         params('body'),
-        created => $now->ymd,
-        created => $now->ymd,
+        created  => $now->ymd,
+        modified => $now->ymd,
+    });
+    redirect uri_for "/neighborhoods/$nid/homes/$home_id";
+};
+
+post '/neighborhoods/:nid/homes/:hid/visits' => sub {
+    my $nid = param 'nid';
+    my $home_id = param 'hid';
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template '404';
+    my $home = $nhood->homes->find($home_id)
+        or return res 404, template '404';
+    my $date_of = param 'date_of'
+        or return res 400, 'The date is missing';
+    my $now = DateTime->now;
+    $home->visits->create({
+        params('body'),
+        created  => $now->ymd,
+        modified => $now->ymd,
     });
     redirect uri_for "/neighborhoods/$nid/homes/$home_id";
 };
@@ -239,7 +259,7 @@ post '/ajax/delete_nhood' => sub {
         error "Could not delete neighborhood: $err";
         return res 500;
     }
-    return '';
+    return {};
 };
 
 post '/ajax/add_teaching_team_member' => sub {
@@ -255,6 +275,18 @@ post '/ajax/add_teaching_team_member' => sub {
     }
     $params->{id} = $member->id;
     return $params;
+};
+
+post '/ajax/delete_visit' => sub {
+    my $params = params('body');
+    info "Deleting visit: ", $params;
+    try {
+        schema->resultset('Visit')->search($params)->delete_all;
+    } catch ($err) {
+        error "Could not delete visit: $err";
+        return res 500;
+    }
+    return {};
 };
 
 sub cluster {
