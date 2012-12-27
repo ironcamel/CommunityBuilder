@@ -43,10 +43,9 @@ __PACKAGE__->table("cluster");
 
 =head2 user_id
 
-  data_type: 'varchar'
+  data_type: 'int'
   is_foreign_key: 1
   is_nullable: 0
-  size: 100
 
 =head2 country
 
@@ -58,15 +57,13 @@ __PACKAGE__->table("cluster");
 =head2 region
 
   data_type: 'varchar'
-  default_value: 'Southeastern States'
-  is_nullable: 0
+  is_nullable: 1
   size: 100
 
 =head2 name
 
   data_type: 'varchar'
-  default_value: 'Fairfax'
-  is_nullable: 0
+  is_nullable: 1
   size: 100
 
 =head2 geo_size
@@ -99,7 +96,7 @@ __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "user_id",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 100 },
+  { data_type => "int", is_foreign_key => 1, is_nullable => 0 },
   "country",
   {
     data_type => "varchar",
@@ -108,19 +105,9 @@ __PACKAGE__->add_columns(
     size => 100,
   },
   "region",
-  {
-    data_type => "varchar",
-    default_value => "Southeastern States",
-    is_nullable => 0,
-    size => 100,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 100 },
   "name",
-  {
-    data_type => "varchar",
-    default_value => "Fairfax",
-    is_nullable => 0,
-    size => 100,
-  },
+  { data_type => "varchar", is_nullable => 1, size => 100 },
   "geo_size",
   { data_type => "int", default_value => 0, is_nullable => 0 },
   "population",
@@ -142,20 +129,6 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("id");
-
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<user_id_unique>
-
-=over 4
-
-=item * L</user_id>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("user_id_unique", ["user_id"]);
 
 =head1 RELATIONS
 
@@ -205,8 +178,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-11-12 10:48:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LUY2Z+aiGNFTzMZxGiN0tQ
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-27 18:47:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wtfN1xOuZBU24NIlTec5kQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,15 +1,17 @@
+drop table user;
+drop table cluster;
 CREATE TABLE user (
-    id       VARCHAR(100) NOT NULL PRIMARY KEY,
-    password VARCHAR(100) NOT NULL,
-    email    VARCHAR(100)
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+    email    VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE cluster (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id    VARCHAR(100) NOT NULL UNIQUE,
+    user_id    INT NOT NULL,
     country    VARCHAR(100) NOT NULL DEFAULT 'United States',
-    region     VARCHAR(100) NOT NULL DEFAULT 'Southeastern States',
-    name       VARCHAR(100) NOT NULL DEFAULT 'Fairfax',
+    region     VARCHAR(100),
+    name       VARCHAR(100),
     geo_size   INT NOT NULL DEFAULT 0,
     population INT NOT NULL DEFAULT 0,
     num_lsa    INT NOT NULL DEFAULT 0,

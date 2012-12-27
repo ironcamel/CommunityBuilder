@@ -1,12 +1,12 @@
 use utf8;
-package CommunityBuilder::Schema::Result::Seeker;
+package CommunityBuilder::Schema::Result::Visit;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CommunityBuilder::Schema::Result::Seeker
+CommunityBuilder::Schema::Result::Visit
 
 =cut
 
@@ -27,11 +27,11 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<seeker>
+=head1 TABLE: C<visit>
 
 =cut
 
-__PACKAGE__->table("seeker");
+__PACKAGE__->table("visit");
 
 =head1 ACCESSORS
 
@@ -47,34 +47,22 @@ __PACKAGE__->table("seeker");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 name
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 100
-
-=head2 phone
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 100
-
-=head2 email
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 100
-
-=head2 anna
-
-  data_type: 'int'
-  default_value: 0
-  is_nullable: 0
-
-=head2 declared
+=head2 date_of
 
   data_type: 'date'
+  is_nullable: 0
+
+=head2 cycle
+
+  data_type: 'varchar'
   is_nullable: 1
+  size: 100
+
+=head2 visitors
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 1000
 
 =head2 created
 
@@ -98,16 +86,12 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "home_id",
   { data_type => "int", is_foreign_key => 1, is_nullable => 1 },
-  "name",
+  "date_of",
+  { data_type => "date", is_nullable => 0 },
+  "cycle",
   { data_type => "varchar", is_nullable => 1, size => 100 },
-  "phone",
-  { data_type => "varchar", is_nullable => 1, size => 100 },
-  "email",
-  { data_type => "varchar", is_nullable => 1, size => 100 },
-  "anna",
-  { data_type => "int", default_value => 0, is_nullable => 0 },
-  "declared",
-  { data_type => "date", is_nullable => 1 },
+  "visitors",
+  { data_type => "varchar", is_nullable => 1, size => 1000 },
   "created",
   { data_type => "date", is_nullable => 1 },
   "modified",
@@ -152,7 +136,7 @@ __PACKAGE__->belongs_to(
 
 
 # Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-27 17:56:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FlkYZK8icSJcKGrcy07xLg
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Zm+Pmzmdh4/L9n9xoP0BpQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

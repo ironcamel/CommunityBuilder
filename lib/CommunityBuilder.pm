@@ -2,10 +2,11 @@ package CommunityBuilding;
 use Dancer ':syntax';
 use re '/aa';
 
-use Dancer::Plugin::DBIC;
+use Dancer::Plugin::DBIC qw(schema);
 use Dancer::Plugin::EscapeHTML;
 use Dancer::Plugin::Passphrase;
 use Dancer::Plugin::Res;
+use Email::Valid;
 use DateTime;
 use Geography::Countries qw(countries);
 use Locale::US;
@@ -16,7 +17,6 @@ our $VERSION = '0.0001';
 my $STATES = [ Locale::US->new()->all_state_codes ];
 
 hook before => sub {
-    #session user_id => 'test';
     return if session('user_id')
         or request->path_info =~ m{^/(login|create-user)};
     var requested_path => request->path_info;
@@ -30,59 +30,62 @@ get '/login' => sub {
 post '/login' => sub {
 
     if (param 'create-user') {
-        my $username = param 'new_username';
         my $password = param 'new_password';
-        my $email    = param 'email';
+        my $email    = param 'new_email';
         info "Request to create a new user with params: ", scalar params;
-        unless ($username and $password and $email) {
+        unless ($password and $email) {
             info "Not all required fields were provided.";
             return template login => {
-                err_msg => "Username, password, and email are required to"
+                err_msg => "An email and password are required to"
                     . " create a new user",
             };
         }
-        return template login => { err_msg => "Invalid username" }
-            if $username !~ /^\w+$/ or $username eq 'admin';
+        if (not Email::Valid->address($email)) {
+            return template login => {
+                err_msg => 'Email is invalid',
+            };
+        }
         $password = passphrase($password)->generate_hash;
-        my $user = {
-            id       => $username,
+        my $user_data = {
             password => "$password",
             email    => $email,
         };
-        debug "Going to create: ", $user;
+        debug "Going to create: ", $user_data;
         try {
+            my $user;
             schema->txn_do(sub {
-                schema->resultset('User')->create($user);
-                schema->resultset('Cluster')->create({ user_id => $username });
+                $user = schema->resultset('User')->create($user_data);
+                $user->discard_changes;
+                schema->resultset('Cluster')->create({ user_id => $user->id });
             });
+            set_session_user($user);
         } catch ($err) {
-            error "Error creating user in db: $err";
-            my $err_msg = $err =~ /column id is not unique/
-                ? "The username '$username' is already taken."
-                : "Could not create user '$username'";
+            error "Error creating user in db: ", $err;
+            my $err_msg = $err =~ /column .* is not unique/
+                ? "An account for $email already exists."
+                : 'Could not create account. Contact ' . setting 'admin_email';
             return template login => { err_msg => $err_msg };
         }
-        session user_id => $username;
         return redirect uri_for '/';
     } else { # Handle login
-        my $username = param 'username';
+        my $email = param 'email';
         my $password = param 'password';
         my $passphrase = passphrase($password);
-        my $user = schema->resultset('User')->find($username);
+        my $user = schema->resultset('User')->find({ email => $email});
         if ($user and $passphrase->matches($user->password)) {
-            session user_id => $username;
+            set_session_user($user);
             return redirect uri_for(params->{path} || '/');
         } else {
-            session user_id => undef;
+            clear_session_user();
             return template login => {
-                err_msg => "Invalid username or password"
+                err_msg => "Invalid email or password"
             };
         }
     }
 };
 
 get '/logout' => sub {
-    session user_id => undef;
+    clear_session_user();
     return redirect uri_for '/login';
 };
 
@@ -294,5 +297,16 @@ sub cluster {
 }
 
 sub dbic_to_hash { map +{ $_->get_columns }, @_ }
+
+sub set_session_user {
+    my ($user) = @_;
+    session user_id => $user->id;
+    session email => $user->email;
+}
+
+sub clear_session_user {
+    session user_id => undef;
+    session email => undef;
+}
 
 true;

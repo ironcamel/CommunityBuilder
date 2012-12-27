@@ -180,7 +180,7 @@ __PACKAGE__->belongs_to(
   "cluster",
   "CommunityBuilder::Schema::Result::Cluster",
   { id => "cluster_id" },
-  { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 =head2 homes
@@ -214,8 +214,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-23 08:02:24
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jDpVgvyKP8fdALh+acOYFQ
+# Created by DBIx::Class::Schema::Loader v0.07033 @ 2012-12-27 17:56:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+8e94cBYvF891K7noq80HQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

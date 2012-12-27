@@ -1,3 +1,4 @@
+[% base = request.uri_base %]
 
 [% IF err_msg %]
 <div id="server-err" class="alert alert-error">
@@ -10,12 +11,12 @@
 </div>
 
 <form id="login-form" name="login" class="well form-inline"
-    action="[% request.uri_base %]/login" method="post" accept-charset="utf-8">
+    action="[% base %]/login" method="post" accept-charset="utf-8">
 
   <fieldset>
     <legend>Sign in</legend>
     <input type="hidden" name="requested_path" value="[% requested_path %]"/>
-    <input id="username" type="text" placeholder="Username" name="username"/>
+    <input id="email" type="text" placeholder="Email" name="email"/>
     <input id="password" type="password" placeholder="Password"
         name="password"/>
     <button class="btn" type="submit">Sign in</button>
@@ -25,7 +26,7 @@
 
 
 <form id="create-form" name="create" class="well"
-    action="[% request.uri_base %]/login"
+    action="[% base %]/login"
     method="post" accept-charset="utf-8">
 
   <input type="hidden" name="create-user" value="1" />
@@ -33,11 +34,8 @@
   <fieldset>
     <legend>Create Account</legend>
 
-    <label for="username">Username</label>
-    <input id="new_username" type="text" name="new_username" />
-
     <label for="email">Email</label>
-    <input id="email" type="text" name="email" />
+    <input id="new_email" type="text" name="new_email" />
 
     <label for="password">Password</label>
     <input id="new_password" type="password" name="new_password" />
@@ -63,17 +61,12 @@
 <script>
 
 $('#create-form').submit(function() {
-  if (! $('#new_username').val()) {
-    $('#validation-err').show();
-    $('#validation-err span').html('Username is required.');
-    return false;
-  }
-  if (! $('#email').val()) {
+  if (! $('#new_email').val()) {
     $('#validation-err').show();
     $('#validation-err span').html('Email is required.');
     return false;
   }
-  if (! $('#email').val().match(/.+@.+\..+/) ) {
+  if (! $('#new_email').val().match(/.+@.+\..+/) ) {
     $('#validation-err').show();
     $('#validation-err span').html('Email is invalid.');
     return false;
