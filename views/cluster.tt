@@ -218,7 +218,8 @@
   </tr>
 </script>
 
-<form class="modal form-horizontal well" id="neighborhood_modal" style="display:none">
+<form class="modal form-horizontal well" id="neighborhood_modal" method="post"
+    action="[% base %]/neighborhoods" style="display:none">
   <div class="modal-header">
     <button class="close" data-dismiss="modal">&times;</button>
     <h3>New Neighborhood</h3>
@@ -228,7 +229,7 @@
     <div class="control-group">
       <label class="control-label" for="nhood_name">Community Name</label>
       <div class="controls">
-        <input id="nhood_name" type="text" />
+        <input id="nhood_name" name="name" type="text" />
       </div>
     </div>
 
@@ -237,39 +238,35 @@
         Neighborhood Coordinator
       </label>
       <div class="controls">
-        <input id="nhood_coordinator" type="text" />
+        <input id="nhood_coordinator" type="text" name="coordinator" />
       </div>
     </div>
 
     <div class="control-group">
       <label class="control-label" for="nhood_address">Address</label>
       <div class="controls">
-        <input id="nhood_address" type="text" />
+        <input id="nhood_address" type="text" name="address" />
       </div>
     </div>
 
     <div class="control-group">
       <label class="control-label" for="nhood_city">City</label>
       <div class="controls">
-        <input id="nhood_city" type="text" />
+        <input id="nhood_city" type="text" name="city" />
       </div>
     </div>
 
     <div class="control-group">
       <label class="control-label" for="nhood_state">State</label>
       <div class="controls">
-        <select name="state" id="state" class="input-mini">
-          [% FOR s IN states %]
-          <option value="[% s %]">[% s %]</option>
-          [% END %]
-        </select>
+        <input id="nhood_state" type="text" name="state" class="input-mini" />
       </div>
     </div>
 
     <div class="control-group">
       <label class="control-label" for="nhood_zip_code">Zip Code</label>
       <div class="controls">
-        <input id="nhood_zip_code" type="text" class="input-mini"/>
+        <input id="nhood_zip_code" type="text" class="input-mini" name="zip_code"/>
       </div>
     </div>
     
@@ -281,43 +278,47 @@
           Contact Name
         </label>
         <div class="controls">
-          <input id="nhood_contact_name" type="text" />
+          <input id="nhood_contact_name" type="text" name="office_name" />
         </div>
       </div>
     
       <div class="control-group">
         <label class="control-label" for="nhood_contact_title">Title</label>
         <div class="controls">
-          <input id="nhood_contact_title" type="text" />
+          <input id="nhood_contact_title" type="text" name="office_title" />
         </div>
       </div>
     
       <div class="control-group">
         <label class="control-label" for="nhood_contact_phone">Phone</label>
         <div class="controls">
-          <input id="nhood_contact_phone" type="text" />
+          <input id="nhood_contact_phone" type="text" name="office_phone" />
         </div>
       </div>
     
       <div class="control-group">
         <label class="control-label" for="nhood_contact_email">Email</label>
         <div class="controls">
-          <input id="nhood_contact_email" type="text" />
+          <input id="nhood_contact_email" type="text" name="office_email" />
         </div>
       </div>
     
-    </fieldset>
-
-    <fieldset>
-      <legend>Notes</legend>
-      <textarea id="nhood_notes" style="width:95%"></textarea>
+      <div class="control-group">
+        <label class="control-label" for="nhood_notes">Notes</label>
+        <div class="controls">
+          <textarea id="nhood_notes" type="text" name="notes" />[% nhood.notes %]</textarea>
+        </div>
+      </div>
+    
     </fieldset>
 
   </div>
 
   <div class="modal-footer">
     <button type="button" class="btn" data-dismiss="modal">Cancel</button>
-    <button id="add_neighborhood" class="btn btn-primary" type="button">Add</button>
+    <button id="add_neighborhood" class="btn btn-primary" type="submit">
+      Add
+    </button>
   </div>
 
 </form>
@@ -335,7 +336,6 @@
           <th>City</th>
           <th>State</th>
           <th>ZIP Code</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -349,9 +349,6 @@
           <td>[% n.city %]</td>
           <td>[% n.state %]</td>
           <td>[% n.zip_code %]</td>
-          <td>
-            <a class="btn" href="[% base %]/neighborhoods/[% n.id %]"><i class="icon-edit"></i></a>
-          </td>
         </tr>
         [% END %]
       </tbody>
@@ -364,20 +361,6 @@
     
   </fieldset>  
 </form>
-
-<script id="nhood_tmpl" type="text/x-mustache-template">
-  <tr>
-    <td><a href="[% base %]/neighborhoods/{{id}}">{{name}}</a></td>
-    <td>{{coordinator}}</td>
-    <td>{{address}}</td>
-    <td>{{city}}</td>
-    <td>{{state}}</td>
-    <td>{{zip_code}}</td>
-    <td>
-      <a class="btn" href="[% base %]/neighborhoods/{{id}}"><i class="icon-edit"></i></a>
-    </td>
-  </tr>
-</script>
 
 <script>
 
@@ -488,38 +471,13 @@ $('#save_core_member').click(function() {
   }
 });
 
-$('#show_neighborhood_modal').click(function() {
-  $('#add_neighborhood').attr('disabled', false);
-});
-
-$('#add_neighborhood').click(function() {
+$('#neighborhood_modal').submit(function() {
   var name = $('#nhood_name').val();
   if (!name) {
     alert('Please enter a neighborhood name.');
-    return;
+    return false;
   }
-  $('#add_neighborhood').attr('disabled', true);
-  $.ajax({
-    url: "[% base %]/ajax/add_neighborhood",
-    type: "POST",
-    data: {
-      name         : $('#nhood_name').val(),
-      coordinator  : $('#nhood_coordinator').val(),
-      address      : $('#nhood_address').val(),
-      city         : $('#nhood_city').val(),
-      state        : $('#nhood_state').val(),
-      zip_code     : $('#nhood_zip_code').val(),
-      office_name  : $('#nhood_contact_name').val(),
-      office_title : $('#nhood_contact_title').val(),
-      office_phone : $('#nhood_contact_phone').val(),
-      office_email : $('#nhood_contact_email').val(),
-      notes        : $('#nhood_notes').val()
-    }
-  }).done(function(data) {
-    $('#neighborhood_modal').modal('hide');
-    var tmpl = $('#nhood_tmpl').html();
-    $('#nhoods_table tbody').append(Mustache.to_html(tmpl, data));
-  });
+  return true;
 });
 
 $('fieldset > legend > a').click(function() {

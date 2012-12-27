@@ -124,10 +124,22 @@ get '/neighborhoods/:id' => sub {
     };
 };
 
+post '/neighborhoods' => sub {
+    my $params = params('body');
+    info "Adding neighborhood: ", $params;
+    try {
+        cluster()->add_to_neighborhoods($params);
+    } catch ($err) {
+        error "Could not add neighborhood: ", $err;
+        return res 500, template 500;
+    }
+    redirect uri_for '/';
+};
+
 post '/neighborhoods/:nid/homes' => sub {
     my $nid = param 'nid';
     my $nhood = cluster()->neighborhoods->find($nid)
-        or return res 404, template '404';
+        or return res 404, template 404;
     my $address = param 'address'
         or return res 400, 'The address is missing';
     my $now = DateTime->now;
@@ -237,19 +249,6 @@ post '/ajax/delete_core_member' => sub {
         or return res 404;
     $m->delete();
     return '';
-};
-
-post '/ajax/add_neighborhood' => sub {
-    my $params = params;
-    info "Adding neighborhood: ", $params;
-    my $nhood = try {
-        cluster()->add_to_neighborhoods($params);
-    } catch ($err) {
-        error "Could not add neighborhood: $err";
-        return res 500;
-    }
-    $params->{id} = $nhood->id;
-    return $params;
 };
 
 post '/ajax/delete_nhood' => sub {
