@@ -200,12 +200,11 @@
           <td>[% m.availability %]</td>
           <td>[% m.active ? 'yes' : 'no' %]</td>
           <td>
-            <button class="btn edit_member" type="button" disabled="disabled"
-                data-id="[% m.id %]"><i class="icon-edit"></i></button>
             <button class="btn delete_member" type="button"
-                data-id="[% m.id %]"><i class="icon-remove"></i></button>
+                data-id="[% m.id %]">
+              <i class="icon-remove"></i>
+            </button>
           </td>
-
         </tr>
         [% END %]
       </tbody>
@@ -324,9 +323,6 @@
     <td>{{availability}}</td>
     <td>yes</td>
     <td>
-      <button id="edit_member_{{id}}" class="btn edit_member" type="button"
-          disabled="disabled"
-          data-id="{{id}}"><i class="icon-edit"></i></button>
       <button id="delete_member_{{id}}" class="btn delete_member" type="button"
           data-id="{{id}}"><i class="icon-remove"></i></button>
     </td>
@@ -338,13 +334,34 @@ $('#show_team_modal').click(function() {
   $('#add_team_member').attr('disabled', false);
 });
 
+$('.delete_member').click(delete_member);
+
+function delete_member() {
+  var name = $(this).parents('tr').data('name');
+  var sure = confirm('Delete team member ' + name + '?');
+  if (!sure) return;
+  var id = $(this).data('id');
+  var row = $(this).parents('tr');
+  $.ajax({
+    url: "[% base %]/ajax/delete_teaching_team_member",
+    type: "POST",
+    data: {
+      id       : id,
+      nhood_id : '[% nhood.id %]'
+    }
+  }).done(function() {
+    row.remove();
+  });
+  return false;
+};
+
 $('#add_team_member').click(function() {
   $('#add_team_member').attr('disabled', true);
   $.ajax({
     url: "[% request.uri_base %]/ajax/add_teaching_team_member",
     type: "POST",
     data: {
-      nhood_id     : '[% nhood.id %]',
+      nhood_id     : [% nhood.id %],
       first_name   : $('#member_first_name').val(),
       last_name    : $('#member_last_name').val(),
       phone        : $('#member_phone').val(),

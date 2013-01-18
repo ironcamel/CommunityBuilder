@@ -91,7 +91,8 @@
 </form>
 
 
-<form class="modal form-horizontal well" id="core_team_modal" style="display:none">
+<form class="modal form-horizontal well" id="core_team_modal"
+    style="display:none">
   <div class="modal-header">
     <button class="close" data-dismiss="modal">&times;</button>
     <h3 id="core_modal_title">New Member</h3>
@@ -192,7 +193,8 @@
         [% END %]
       </tbody>
     </table>
-    <button id="show_core_modal" class="btn btn-primary" type="button">
+    <button id="show_core_modal" class="btn btn-primary" type="button"
+        data-toggle="modal" data-target="#core_team_modal">
       Add Member
     </button>
   </fieldset>  
@@ -406,7 +408,6 @@ $('#show_core_modal').click(function() {
   $('#save_core_member').attr('disabled', false);
   $('#save_core_member').data('is_add', true);
   $('#core_modal_title').html('New Member');
-  $('#core_team_modal').modal();
 });
 
 // Edit Core Member button

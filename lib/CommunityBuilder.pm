@@ -268,15 +268,28 @@ post '/ajax/add_teaching_team_member' => sub {
     my $params = params;
     info "Adding teaching team member: ", $params;
     my $nhood_id = delete $params->{nhood_id};
-    my $nhood = schema->resultset('Neighborhood')->find($nhood_id);
-    my $member = try {
-        $nhood->add_to_teaching_team_members($params);
+    my $nhood = cluster()->neighborhoods->find($nhood_id)
+        or return res 400, "No such neighborhood";
+    try {
+        my $member = $nhood->add_to_teaching_team_members($params);
+        $params->{id} = $member->discard_changes->id;
+        return $params;
     } catch ($err) {
         error "Could not add core team member: $err";
         return res 500;
     }
-    $params->{id} = $member->id;
-    return $params;
+};
+
+post '/ajax/delete_teaching_team_member' => sub {
+    my $params = params;
+    info "Deleting core team member: ", $params;
+    my $nhood_id = param 'nhood_id';
+    my $nhood = cluster()->neighborhoods->find($nhood_id)
+        or return res 400, "No such neighborhood";
+    my $m = $nhood->teaching_team_members->find(param 'id')
+        or return res 400, "No such member";
+    $m->delete();
+    return {};
 };
 
 post '/ajax/delete_visit' => sub {
