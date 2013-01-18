@@ -227,7 +227,8 @@
     <div class="control-group">
       <label class="control-label" for="visit_notes">Notes</label>
       <div class="controls">
-        <textarea id="visit_notes" name="notes" type="text"/>[% visitor.notes %]</textarea>
+        <textarea id="visit_notes" name="notes" class="input-block-level"
+          rows="9">[% visitor.notes %]</textarea>
       </div>
     </div>
 
