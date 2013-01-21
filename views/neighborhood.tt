@@ -1,7 +1,7 @@
 [% base = request.uri_base %]
 
 <form class="form-horizontal well" id="nhood_form" method="post"
-    action="[% base _ request.path_info %]/update">
+    action="[% base _ request.path_info %]/edit">
   <fieldset>  
     <legend>Neighborhood</legend>
 
@@ -11,42 +11,42 @@
         <div class="control-group">
           <label class="control-label" for="nhood_name">Name</label>
           <div class="controls">
-            <input id="nhood_name" type="text" value="[% nhood.name %]"/>
+            <input id="nhood_name" name="name" type="text" value="[% nhood.name %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="nhood_coord">Coordinator</label>
           <div class="controls">
-            <input id="nhood_coord" type="text" value="[% nhood.coordinator %]"/>
+            <input id="nhood_coord" name="coordinator" type="text" value="[% nhood.coordinator %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="nhood_addr">Address</label>
           <div class="controls">
-            <input id="nhood_addr" type="text" value="[% nhood.address %]"/>
+            <input id="nhood_addr" name="address" type="text" value="[% nhood.address %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="nhood_city">City</label>
           <div class="controls">
-            <input id="nhood_city" type="text" value="[% nhood.city %]"/>
+            <input id="nhood_city" name="city" type="text" value="[% nhood.city %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="nhood_state">State</label>
           <div class="controls">
-            <input id="nhood_state" type="text" value="[% nhood.state %]"/>
+            <input id="nhood_state" name="state" type="text" value="[% nhood.state %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="nhood_zip">Zip Code</label>
           <div class="controls">
-            <input id="nhood_zip" type="text" value="[% nhood.zip_code %]"/>
+            <input id="nhood_zip" name="zip_code" type="text" value="[% nhood.zip_code %]"/>
           </div>
         </div>
 
@@ -57,42 +57,41 @@
         <div class="control-group">
           <label class="control-label" for="office_contact">Office Contact</label>
           <div class="controls">
-            <input id="office_contact" type="text" value="[% nhood.office_name %]"/>
+            <input id="office_contact" name="office_name"  type="text" value="[% nhood.office_name %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="office_title">Office Title</label>
           <div class="controls">
-            <input id="office_title" type="text" value="[% nhood.office_title %]"/>
+            <input id="office_title" name="office_title"  type="text" value="[% nhood.office_title %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="office_phone">Office Phone</label>
           <div class="controls">
-            <input id="office_phone" type="text" value="[% nhood.office_phone %]"/>
+            <input id="office_phone" name="office_phone"  type="text" value="[% nhood.office_phone %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="office_email">Office Email</label>
           <div class="controls">
-            <input id="office_email" type="text" value="[% nhood.office_email %]"/>
+            <input id="office_email" name="office_email"  type="text" value="[% nhood.office_email %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="nhood_notes">Notes</label>
           <div class="controls">
-            <textarea id="nhood_notes" type="text"/>[% nhood.notes %]</textarea>
+            <textarea id="nhood_notes" name="notes" type="text"/>[% nhood.notes %]</textarea>
           </div>
         </div>
 
         <div class="control-group">
           <div class="controls">
           <button id="delete_nhood" class="btn" type="button"
-              disabled="disabled"
               data-id="[% nhood.id %]">
             Delete Neighborhood <i class="icon-remove"></i>
           </button>
@@ -100,11 +99,9 @@
         </div>
 
       </div> <!-- end span5 -->
-
     </div> <!-- end row -->
 
-    <button id="update_nhood_btn" class="btn btn-primary"
-        disabled="disabled">
+    <button id="update_nhood_btn" class="btn btn-primary" type="submit">
       Update Neighborhood
     </button>
 
@@ -391,5 +388,14 @@ function delete_nhood() {
 };
 
 $('#delete_nhood').click(delete_nhood);
+
+$('#nhood_form').submit(function() {
+    var name = $.trim($('#nhood_name').val());
+    if (!name) {
+        alert('A neighborhood name is required');
+        return false;
+    }
+    return true;
+});
 
 </script>

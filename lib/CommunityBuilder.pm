@@ -136,6 +136,21 @@ post '/neighborhoods' => sub {
     redirect uri_for '/';
 };
 
+post '/neighborhoods/:nid/edit' => sub {
+    my $nid = param 'nid';
+    my $params = params 'body';
+    info "Updating neighborhood: ", $params;
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template 404;
+    try {
+        $nhood->update($params);
+    } catch ($err) {
+        error "Could not update neighborhood: ", $err;
+        return res 500, template 500;
+    }
+    redirect uri_for '/neighborhoods/' . $nhood->id;
+};
+
 post '/neighborhoods/:nid/homes' => sub {
     my $nid = param 'nid';
     my $nhood = cluster()->neighborhoods->find($nid)
@@ -255,8 +270,7 @@ post '/ajax/delete_nhood' => sub {
     my $params = params;
     info "Deleting neighborhood: ", $params;
     try {
-        my $m = cluster()->neighborhoods({ id => param 'id' });
-        $m->delete_all();
+        cluster()->neighborhoods($params)->delete_all;
     } catch ($err) {
         error "Could not delete neighborhood: $err";
         return res 500;

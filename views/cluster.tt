@@ -473,7 +473,7 @@ $('#save_core_member').click(function() {
 });
 
 $('#neighborhood_modal').submit(function() {
-  var name = $('#nhood_name').val();
+  var name = $.trim($('#nhood_name').val());
   if (!name) {
     alert('Please enter a neighborhood name.');
     return false;
