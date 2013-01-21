@@ -181,6 +181,25 @@ get '/neighborhoods/:nid/homes/:hid' => sub {
     };
 };
 
+post '/neighborhoods/:nid/homes/:hid/edit' => sub {
+    my $nid = param 'nid';
+    my $home_id = param 'hid';
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template '404';
+    my $home = $nhood->homes->find($home_id)
+        or return res 404, template '404';
+    my $name = params('body')->{name}
+        or return res 400, 'The name is missing';
+    my $name = params('body')->{address}
+        or return res 400, 'The address is missing';
+    my $now = DateTime->now;
+    $home->update({
+        params('body'),
+        modified => $now->ymd,
+    });
+    redirect uri_for "/neighborhoods/$nid/homes/$home_id";
+};
+
 post '/neighborhoods/:nid/homes/:hid/seekers' => sub {
     my $nid = param 'nid';
     my $home_id = param 'hid';
@@ -315,6 +334,17 @@ post '/ajax/delete_visit' => sub {
         error "Could not delete visit: $err";
         return res 500;
     }
+    return {};
+};
+
+post '/ajax/delete_home' => sub {
+    my $nid = param 'nhood_id';
+    my $home_id = param 'home_id';
+    my $nhood = cluster()->neighborhoods->find($nid)
+        or return res 404, template '404';
+    my $home = $nhood->homes->find($home_id)
+        or return res 404, template '404';
+    $home->delete;
     return {};
 };
 

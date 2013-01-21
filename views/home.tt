@@ -1,8 +1,9 @@
 [% base = request.uri_base %]
 [% home_path = base _ request.path_info %]
 
-<form class="form-horizontal well" id="nhood_form" method="post"
-    action="[% home_path %]/update">
+<form class="form-horizontal well" id="home_form" method="post"
+    action="[% home_path %]/edit">
+
   <fieldset>  
     <legend>Home</legend>
 
@@ -12,42 +13,42 @@
         <div class="control-group">
           <label class="control-label" for="home_name">Family Name</label>
           <div class="controls">
-            <input id="home_name" type="text" value="[% home.name %]"/>
+            <input id="home_name" name="name" type="text" value="[% home.name %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="home_addr">Address</label>
           <div class="controls">
-            <input id="home_addr" type="text" value="[% home.address %]"/>
+            <input id="home_addr" name="address" type="text" value="[% home.address %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="home_city">City</label>
           <div class="controls">
-            <input id="home_city" type="text" value="[% home.city %]"/>
+            <input id="home_city" name="city" type="text" value="[% home.city %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="home_state">State</label>
           <div class="controls">
-            <input id="home_state" type="text" value="[% home.state %]"/>
+            <input id="home_state" name="state" type="text" value="[% home.state %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="home_zip">Zip Code</label>
           <div class="controls">
-            <input id="home_zip" type="text" value="[% home.zip_code %]"/>
+            <input id="home_zip" name="zip_code" type="text" value="[% home.zip_code %]"/>
           </div>
         </div>
 
         <div class="control-group">
           <label class="control-label" for="home_phone">Phone</label>
           <div class="controls">
-            <input id="home_phone" type="text" value="[% home.phone %]"/>
+            <input id="home_phone" name="phone" type="text" value="[% home.phone %]"/>
           </div>
         </div>
 
@@ -86,22 +87,10 @@
           </div>
         </div>
 
-        <div class="control-group">
-          <div class="controls">
-          <button id="delete_home" class="btn" type="button"
-              disabled="disabled"
-              data-id="[% home.id %]">
-            Delete Home <i class="icon-remove"></i>
-          </button>
-          </div>
-        </div>
-
       </div> <!-- end span5 -->
-
     </div> <!-- end row -->
 
-    <button id="update_home_btn" class="btn btn-primary"
-        disabled="disabled">
+    <button id="update_home_btn" class="btn btn-primary">
       Update Home
     </button>
 
@@ -303,6 +292,23 @@ $('.delete_visit').click(function delete_core_member() {
     row.remove();
   });
   return false;
+});
+
+$('#home_form').submit(function() {
+    var name = $.trim($('#home_name').val());
+    if (!name) {
+        alert('A home name is required');
+        return false;
+    }
+    var address = $.trim($('#home_addr').val());
+    if (!address) {
+        alert('A home address is required');
+        return false;
+    }
+    return true;
+});
+
+$('#delete_home').click(function() {
 });
 
 </script>

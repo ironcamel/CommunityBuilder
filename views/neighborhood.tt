@@ -297,7 +297,12 @@
         <td>[% home.name %]</td>
         <td>[% home.phone %]</td>
         <td>[% home.anna ? 'yes' : 'no' %]</td>
-        <td></td>
+        <td>
+          <button class="btn delete_home" type="button"
+              data-home_id="[% home.id %]">
+            <i class="icon-remove"></i>
+          </button>
+        </td>
       </tr>
       [% END %]
       </tbody>
@@ -396,6 +401,24 @@ $('#nhood_form').submit(function() {
         return false;
     }
     return true;
+});
+
+$('.delete_home').click(function () {
+  var sure = confirm('Delete this home?');
+  if (!sure) return;
+  var home_id = $(this).data('home_id');
+  var row = $(this).parents('tr');
+  $.ajax({
+    url: "[% base %]/ajax/delete_home",
+    type: "POST",
+    data: {
+        home_id  : home_id,
+        nhood_id : [% nhood.id %]
+    }
+  }).done(function() {
+    row.remove();
+  });
+  return false;
 });
 
 </script>
